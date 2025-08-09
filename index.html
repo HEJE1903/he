@@ -128,20 +128,22 @@
     <!-- Homepage View -->
     <div id="home-page" class="page-container hidden flex-col items-center justify-center p-8 text-center">
         <video id="home-bg-video" loop muted playsinline>
-            <!-- CHANGE: Added Cloudinary transformations to optimize the video -->
             <source src="https://res.cloudinary.com/dzklkjmiq/video/upload/w_1080,q_auto,f_auto/background_izstkz.mp4" type="video/mp4">
         </video>
-        <div id="home-content" class="z-10 w-full bg-black bg-opacity-40 py-10 rounded-lg">
+        <!-- New semi-transparent overlay for readability -->
+        <div class="absolute inset-0 bg-black/60 z-0"></div>
+        <div id="home-content" class="z-10 w-full">
             <h1 class="font-serif text-8xl font-bold mb-2 text-white tracking-wider animate-title-glow">HEJE</h1>
             <p class="text-gray-300 mb-16 text-lg italic animate-subtitle-fade">As always, and always will.</p>
             <div class="max-w-sm mx-auto space-y-4">
-                <button id="topic-button-1" onclick="showStoryPage(this)" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 px-6 rounded-lg shadow-lg transition-transform transform hover:scale-105 animate-button-1">
+                <!-- New "glassmorphism" button style -->
+                <button id="topic-button-1" onclick="showStoryPage(this)" class="w-full bg-white/10 border border-white/20 backdrop-blur-sm hover:bg-white/20 text-white font-bold py-4 px-6 rounded-lg shadow-lg transition-all duration-300 transform hover:scale-105 animate-button-1">
                     The Night We Met
                 </button>
-                <button class="w-full bg-gray-700 text-gray-400 font-bold py-4 px-6 rounded-lg cursor-not-allowed animate-button-2" disabled>
+                <button class="w-full bg-white/5 border border-white/10 backdrop-blur-sm text-gray-500 font-bold py-4 px-6 rounded-lg cursor-not-allowed animate-button-2" disabled>
                     Topic 2 (Coming Soon)
                 </button>
-                <button class="w-full bg-gray-700 text-gray-400 font-bold py-4 px-6 rounded-lg cursor-not-allowed animate-button-3" disabled>
+                <button class="w-full bg-white/5 border border-white/10 backdrop-blur-sm text-gray-500 font-bold py-4 px-6 rounded-lg cursor-not-allowed animate-button-3" disabled>
                     Topic 3 (Coming Soon)
                 </button>
             </div>
