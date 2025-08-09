@@ -210,14 +210,11 @@
         const petalColors = ['#FFFFFF', '#F5F5F5', '#FAFAFA'];
 
         // --- Loading Logic ---
-        function onVideoReady() {
+        function showEnterButton() {
             loadingIndicator.style.display = 'none';
             enterButton.classList.remove('hidden');
             soundMessage.classList.remove('hidden');
             
-            // Pre-play the video silently in the background
-            homeBgVideo.play().catch(e => console.error("Pre-play failed", e));
-
             setTimeout(() => {
                 enterButton.style.opacity = '1';
                 enterButton.style.transform = 'scale(1)';
@@ -225,12 +222,8 @@
             }, 100);
         }
 
-        window.addEventListener('load', () => {
-            homeBgVideo.addEventListener('canplaythrough', onVideoReady, { once: true });
-            if (homeBgVideo.readyState >= 4) { // HAVE_ENOUGH_DATA
-                onVideoReady();
-            }
-        });
+        // Show the enter button as soon as the page loads, without waiting for the video.
+        window.addEventListener('load', showEnterButton);
 
         function enterHomepage() {
             triggerHapticFeedback();
@@ -239,8 +232,17 @@
             
             homePage.classList.remove('hidden');
             
-            // Just unmute the video, it's already playing
+            // The user's click gives permission. Now we unmute AND play.
             homeBgVideo.muted = false;
+            const playPromise = homeBgVideo.play();
+            if (playPromise !== undefined) {
+                playPromise.catch(error => {
+                    // If it still fails (e.g., low power mode), play muted.
+                    console.log("Playback with sound failed, playing muted.", error);
+                    homeBgVideo.muted = true;
+                    homeBgVideo.play();
+                });
+            }
 
             setTimeout(() => {
                 loadingPage.style.display = 'none';
