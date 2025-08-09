@@ -189,21 +189,23 @@
         </video>
         <div id="home-content" class="z-20 w-full h-full flex flex-col items-center">
             <div class="text-center pt-24">
-                <h1 id="main-header" class="font-serif text-7xl font-bold text-white tracking-wider opacity-0 transition-opacity duration-1000" style="text-shadow: 0 2px 15px rgba(0,0,0,0.5);">HEJE</h1>
-                <p id="main-subtitle" class="text-white text-lg italic opacity-0 transition-opacity duration-1000" style="text-shadow: 0 1px 10px rgba(0,0,0,0.5);">As always, and always will.</p>
+                <!-- MODIFIED: Removed shadow, changed color -->
+                <h1 id="main-header" class="font-serif text-7xl font-bold text-amber-900 tracking-wider opacity-0 transition-opacity duration-1000">HEJE</h1>
+                <p id="main-subtitle" class="text-amber-900 text-lg italic opacity-0 transition-opacity duration-1000">As always, and always will.</p>
             </div>
             <div class="flex-grow relative w-full">
-                <div id="menu-container" class="absolute bottom-24 left-0 right-0 h-48 flex items-center justify-center">
+                <!-- MODIFIED: Centered the menu container -->
+                <div id="menu-container" class="absolute inset-0 flex items-center justify-center">
                     <button id="memory-orb" class="w-20 h-20 rounded-full backdrop-blur-md shadow-lg border border-white/30"></button>
-                    <button id="topic-button-1" data-page="story-page-1" class="topic-button w-48 flex items-center justify-center gap-2 bg-white/40 border border-white/50 backdrop-blur-lg text-black font-bold py-3 px-6 rounded-lg shadow-lg">
+                    <button id="topic-button-1" data-page="story-page-1" class="topic-button w-48 flex items-center justify-center gap-2 bg-white/40 border border-white/50 backdrop-blur-lg text-amber-900 font-bold py-3 px-6 rounded-lg shadow-lg">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
                         <span>The Night We Met</span>
                     </button>
-                    <button id="topic-button-2" data-page="story-page-2" class="topic-button w-48 flex items-center justify-center gap-2 bg-white/40 border border-white/50 backdrop-blur-lg text-black font-bold py-3 px-6 rounded-lg shadow-lg">
+                    <button id="topic-button-2" data-page="story-page-2" class="topic-button w-48 flex items-center justify-center gap-2 bg-white/40 border border-white/50 backdrop-blur-lg text-amber-900 font-bold py-3 px-6 rounded-lg shadow-lg">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7"/><path d="m19 19-7-7 7-7"/></svg>
                         <span>A Thousand Miles</span>
                     </button>
-                    <button id="topic-button-3" data-page="story-page-3" class="topic-button w-48 flex items-center justify-center gap-2 bg-white/40 border border-white/50 backdrop-blur-lg text-black font-bold py-3 px-6 rounded-lg shadow-lg">
+                    <button id="topic-button-3" data-page="story-page-3" class="topic-button w-48 flex items-center justify-center gap-2 bg-white/40 border border-white/50 backdrop-blur-lg text-amber-900 font-bold py-3 px-6 rounded-lg shadow-lg">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.42 9.58 13.58 12 10.42 14.42 M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20Z"/></svg>
                         <span>Our Little Infinity</span>
                     </button>
@@ -525,7 +527,6 @@
 
             setTimeout(() => {
                 homePage.classList.remove('hidden');
-                // MODIFIED: This line is now removed to keep the menu state
                 // homePage.classList.remove('topics-revealed'); 
                 homeContent.classList.remove('home-content-fade-out');
                 homeContent.classList.add('home-content-fade-in');
