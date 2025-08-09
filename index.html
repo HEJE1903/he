@@ -43,18 +43,15 @@
             object-fit: cover;
         }
         
-        /* --- Warm Golden Glow --- */
-        @keyframes glow {
-            0%, 100% { text-shadow: 0 0 10px #fff, 0 0 20px #ffd700, 0 0 30px #ffc40c; }
-            50% { text-shadow: 0 0 20px #fff, 0 0 30px #ffc40c, 0 0 40px #ff8c00; }
-        }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
         @keyframes slideUp {
             from { opacity: 0; transform: translateY(40px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        .animate-title-glow { animation: glow 4s ease-in-out infinite, fadeIn 2s ease-out; }
+
+        /* --- Animation classes for homepage elements --- */
+        .animate-title-fade { animation: fadeIn 2s ease-out; }
         .animate-subtitle-fade { animation: fadeIn 2s ease-out 0.5s backwards; }
         .animate-button-1 { animation: slideUp 1s ease-out 1s backwards; }
         .animate-button-2 { animation: slideUp 1s ease-out 1.2s backwards; }
@@ -131,19 +128,19 @@
         <video id="home-bg-video" loop muted playsinline>
             <source src="https://res.cloudinary.com/dzklkjmiq/video/upload/w_1080,q_auto,f_auto/background_izstkz.mp4" type="video/mp4">
         </video>
-        <!-- REMOVED: The dark overlay div is gone -->
         <div id="home-content" class="z-10 w-full">
-            <h1 class="font-serif text-8xl font-bold mb-2 text-white tracking-wider animate-title-glow" style="text-shadow: 0 2px 10px rgba(0,0,0,0.5);">HEJE</h1>
-            <p class="text-gray-200 mb-16 text-lg italic animate-subtitle-fade" style="text-shadow: 0 1px 5px rgba(0,0,0,0.5);">As always, and always will.</p>
+            <!-- UPDATED: New elegant header design with strong text shadow for readability -->
+            <h1 class="font-serif text-7xl font-bold mb-2 text-white tracking-wider animate-title-fade" style="text-shadow: 0 3px 20px rgba(0,0,0,0.6);">HEJE</h1>
+            <p class="text-gray-200 mb-16 text-lg italic animate-subtitle-fade" style="text-shadow: 0 2px 10px rgba(0,0,0,0.6);">As always, and always will.</p>
             <div class="max-w-sm mx-auto space-y-4">
                 <!-- UPDATED: New "frosted glass" button style -->
-                <button id="topic-button-1" onclick="showStoryPage(this)" class="w-full bg-white/10 border border-white/20 backdrop-blur-md hover:bg-white/20 text-white font-bold py-4 px-6 rounded-lg shadow-lg transition-all duration-300 transform hover:scale-105 animate-button-1">
+                <button id="topic-button-1" onclick="showStoryPage(this)" class="w-full bg-black/20 border border-white/30 backdrop-blur-lg hover:bg-black/30 text-white font-bold py-4 px-6 rounded-lg shadow-lg transition-all duration-300 transform hover:scale-105 animate-button-1">
                     The Night We Met
                 </button>
-                <button class="w-full bg-black/10 border border-white/10 backdrop-blur-md text-gray-400 font-bold py-4 px-6 rounded-lg cursor-not-allowed animate-button-2" disabled>
+                <button class="w-full bg-black/10 border border-white/20 backdrop-blur-lg text-gray-400 font-bold py-4 px-6 rounded-lg cursor-not-allowed animate-button-2" disabled>
                     Topic 2 (Coming Soon)
                 </button>
-                <button class="w-full bg-black/10 border border-white/10 backdrop-blur-md text-gray-400 font-bold py-4 px-6 rounded-lg cursor-not-allowed animate-button-3" disabled>
+                <button class="w-full bg-black/10 border border-white/20 backdrop-blur-lg text-gray-400 font-bold py-4 px-6 rounded-lg cursor-not-allowed animate-button-3" disabled>
                     Topic 3 (Coming Soon)
                 </button>
             </div>
@@ -222,12 +219,7 @@
             }, 100);
         }
 
-        window.addEventListener('load', () => {
-            homeBgVideo.addEventListener('canplaythrough', onVideoReady, { once: true });
-            if (homeBgVideo.readyState >= 4) { // HAVE_ENOUGH_DATA
-                onVideoReady();
-            }
-        });
+        window.addEventListener('load', onVideoReady);
 
         function enterHomepage() {
             triggerHapticFeedback();
@@ -236,24 +228,21 @@
             
             homePage.classList.remove('hidden');
             
-            // Unmute and play the video
             homeBgVideo.muted = false;
-            homeBgVideo.volume = 0; // Start at 0 volume
+            homeBgVideo.volume = 0;
             const playPromise = homeBgVideo.play();
 
             if (playPromise !== undefined) {
                 playPromise.then(() => {
-                    // --- NEW: Fade in the volume ---
                     let currentVolume = 0;
                     const fadeAudio = setInterval(() => {
                         if (currentVolume < 1) {
                             currentVolume += 0.05;
-                            // Clamp the volume to 1 to avoid errors
                             homeBgVideo.volume = Math.min(currentVolume, 1);
                         } else {
                             clearInterval(fadeAudio);
                         }
-                    }, 75); // Increase volume every 75ms for a 1.5s fade
+                    }, 75);
                 }).catch(error => {
                     console.log("Autoplay with sound failed, playing muted as fallback.", error);
                     homeBgVideo.muted = true;
