@@ -93,6 +93,7 @@
 
         /* --- New "Unfolding Memories" Design --- */
         #memory-orb {
+            background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.8), rgba(255,255,255,0.2));
             transition: transform 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55), box-shadow 0.4s;
         }
         #memory-orb:hover {
@@ -161,10 +162,19 @@
             <div class="flex-grow relative w-full">
                 <!-- The new menu system -->
                 <div id="menu-container" class="absolute bottom-24 left-0 right-0 h-48 flex items-center justify-center">
-                    <button id="memory-orb" onclick="revealTopics()" class="w-16 h-16 bg-white/30 rounded-full backdrop-blur-md shadow-lg" style="animation: pulse 3s infinite ease-in-out;"></button>
-                    <button id="topic-button-1" onclick="showStoryPage(this, 'story-page-1')" class="topic-button w-44 bg-white/20 border border-white/30 backdrop-blur-md text-white font-bold py-3 px-6 rounded-lg shadow-lg">The Night We Met</button>
-                    <button id="topic-button-2" onclick="showStoryPage(this, 'story-page-2')" class="topic-button w-44 bg-white/20 border border-white/30 backdrop-blur-md text-white font-bold py-3 px-6 rounded-lg shadow-lg">A Thousand Miles</button>
-                    <button id="topic-button-3" onclick="showStoryPage(this, 'story-page-3')" class="topic-button w-44 bg-white/20 border border-white/30 backdrop-blur-md text-white font-bold py-3 px-6 rounded-lg shadow-lg">Our Little Infinity</button>
+                    <button id="memory-orb" onclick="revealTopics()" class="w-20 h-20 rounded-full backdrop-blur-md shadow-lg border border-white/30" style="animation: pulse 3s infinite ease-in-out;"></button>
+                    <button id="topic-button-1" onclick="showStoryPage(this, 'story-page-1')" class="topic-button w-48 flex items-center justify-center gap-2 bg-white/40 border border-white/50 backdrop-blur-lg text-black font-bold py-3 px-6 rounded-lg shadow-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+                        <span>The Night We Met</span>
+                    </button>
+                    <button id="topic-button-2" onclick="showStoryPage(this, 'story-page-2')" class="topic-button w-48 flex items-center justify-center gap-2 bg-white/40 border border-white/50 backdrop-blur-lg text-black font-bold py-3 px-6 rounded-lg shadow-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7"/><path d="m19 19-7-7 7-7"/></svg>
+                        <span>A Thousand Miles</span>
+                    </button>
+                    <button id="topic-button-3" onclick="showStoryPage(this, 'story-page-3')" class="topic-button w-48 flex items-center justify-center gap-2 bg-white/40 border border-white/50 backdrop-blur-lg text-black font-bold py-3 px-6 rounded-lg shadow-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.42 9.58 13.58 12 10.42 14.42 M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20Z"/></svg>
+                        <span>Our Little Infinity</span>
+                    </button>
                 </div>
             </div>
         </div>
