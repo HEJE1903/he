@@ -30,7 +30,7 @@
             will-change: opacity;
         }
 
-        #home-bg-video, #bg-video {
+        #home-bg-video, .story-video {
             position: fixed;
             top: 50%;
             left: 50%;
@@ -57,6 +57,9 @@
         .animate-button-2 { animation: slideUp 1s ease-out 1.2s backwards; }
         .animate-button-3 { animation: slideUp 1s ease-out 1.4s backwards; }
         
+        .home-content-fade-out { animation: fadeOut 1s ease-out forwards; }
+        .home-content-fade-in { animation: fadeIn 1s ease-in forwards; }
+
         /* --- Transition Containers --- */
         #portal-container, #particle-container {
             position: absolute;
@@ -83,12 +86,12 @@
         }
 
         /* --- Story Page Reveal Styles --- */
-        #story-content {
+        .story-content {
             background-color: rgba(0, 0, 0, 0); /* Initially transparent */
             transition: background-color 1.5s ease-out;
         }
 
-        #story-text-wrapper {
+        .story-text-wrapper {
             opacity: 0;
             transition: opacity 1.5s ease-out;
         }
@@ -128,39 +131,83 @@
         <video id="home-bg-video" loop muted playsinline>
             <source src="https://res.cloudinary.com/dzklkjmiq/video/upload/w_1080,q_auto,f_auto/background_izstkz.mp4" type="video/mp4">
         </video>
-        <div id="home-content" class="z-10 w-full">
-            <h1 class="font-serif text-7xl font-bold mb-2 text-white tracking-wider animate-title-fade" style="text-shadow: 0 3px 20px rgba(0,0,0,0.6);">HEJE</h1>
-            <p class="text-gray-200 mb-16 text-lg italic animate-subtitle-fade" style="text-shadow: 0 2px 10px rgba(0,0,0,0.6);">As always, and always will.</p>
-            <div class="max-w-sm mx-auto space-y-4">
-                <button id="topic-button-1" onclick="showStoryPage(this)" class="w-full bg-black/20 border border-white/30 backdrop-blur-lg hover:bg-black/30 text-white font-bold py-4 px-6 rounded-lg shadow-lg transition-all duration-300 transform hover:scale-105 animate-button-1">
+        <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+        <div id="home-content" class="z-10 w-full flex flex-col h-full">
+            <div class="flex-grow flex flex-col items-center justify-center">
+                <h1 class="font-serif text-8xl font-bold mb-2 text-white tracking-wider animate-title-fade">HEJE</h1>
+                <p class="text-gray-200 mb-16 text-lg italic animate-subtitle-fade">As always, and always will.</p>
+            </div>
+            <!-- NEW: Arc Layout for Buttons -->
+            <div class="relative w-full h-48 mb-8">
+                <button id="topic-button-1" onclick="showStoryPage(this, 'story-page-1')" class="absolute left-1/2 -translate-x-1/2 bottom-0 w-40 bg-white/20 border border-white/30 backdrop-blur-md hover:bg-white/30 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition-all duration-300 transform hover:scale-105 animate-button-2" style="transform: translateX(-50%) translateY(-20%) scale(1.1);">
                     The Night We Met
                 </button>
-                <button class="w-full bg-black/10 border border-white/20 backdrop-blur-lg text-gray-400 font-bold py-4 px-6 rounded-lg cursor-not-allowed animate-button-2" disabled>
-                    Topic 2 (Coming Soon)
+                <button id="topic-button-2" onclick="showStoryPage(this, 'story-page-2')" class="absolute left-1/2 -translate-x-1/2 bottom-0 w-36 bg-white/20 border border-white/30 backdrop-blur-md hover:bg-white/30 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition-all duration-300 transform hover:scale-105 animate-button-1" style="transform: translateX(-120%) rotate(-15deg);">
+                    A Thousand Miles
                 </button>
-                <button class="w-full bg-black/10 border border-white/20 backdrop-blur-lg text-gray-400 font-bold py-4 px-6 rounded-lg cursor-not-allowed animate-button-3" disabled>
-                    Topic 3 (Coming Soon)
+                <button id="topic-button-3" onclick="showStoryPage(this, 'story-page-3')" class="absolute left-1/2 -translate-x-1/2 bottom-0 w-36 bg-white/20 border border-white/30 backdrop-blur-md hover:bg-white/30 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition-all duration-300 transform hover:scale-105 animate-button-3" style="transform: translateX(20%) rotate(15deg);">
+                    Our Little Infinity
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- Story Page View -->
-    <div id="story-page" class="page-container hidden opacity-0" style="transition: opacity 2s ease-in;">
-        <video id="bg-video" loop muted playsinline>
+    <!-- Story Page 1 -->
+    <div id="story-page-1" class="page-container story-page hidden opacity-0" style="transition: opacity 2s ease-in;">
+        <video class="story-video" loop muted playsinline>
             <source src="https://res.cloudinary.com/dzklkjmiq/video/upload/v1723188004/tikmate.app_7395667278567591169_hd_rrh9nl.mp4" type="video/mp4">
         </video>
-
-        <div id="story-content" class="absolute inset-0 w-full h-full overflow-y-auto no-scrollbar z-10 p-6 pt-20 pb-20 text-white">
-            <div id="story-text-wrapper" class="max-w-md mx-auto space-y-12">
-                <h1 class="font-serif text-5xl font-bold leading-tight text-center">The Night We Met</h1>
-                <p class="text-lg leading-relaxed">The city was a blur of neon lights and hurried footsteps...</p>
-                <p class="text-2xl font-serif text-center italic my-16">"And in that moment, I swear we were infinite."</p>
-                <p class="text-lg leading-relaxed">You were standing by the window, bathed in the soft glow of a streetlamp...</p>
-                <p class="text-lg leading-relaxed">That night wasn't just the night we met. It was the night my world changed forever.</p>
+        <div class="story-content absolute inset-0 w-full h-full overflow-y-auto no-scrollbar z-10 p-6 text-white">
+            <div class="story-text-wrapper max-w-md mx-auto space-y-12 min-h-[101vh] flex flex-col justify-center">
+                <div>
+                    <h1 class="font-serif text-5xl font-bold leading-tight text-center">The Night We Met</h1>
+                    <p class="text-lg leading-relaxed mt-12">The city was a blur of neon lights and hurried footsteps...</p>
+                    <p class="text-2xl font-serif text-center italic my-16">"And in that moment, I swear we were infinite."</p>
+                    <p class="text-lg leading-relaxed">You were standing by the window, bathed in the soft glow of a streetlamp...</p>
+                    <p class="text-lg leading-relaxed mt-4">That night wasn't just the night we met. It was the night my world changed forever.</p>
+                </div>
             </div>
         </div>
+        <button onclick="showHomePage()" class="absolute top-4 left-4 z-20 bg-black bg-opacity-50 text-white p-3 rounded-full hover:bg-opacity-75 transition">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+        </button>
+    </div>
 
+    <!-- Story Page 2 -->
+    <div id="story-page-2" class="page-container story-page hidden opacity-0" style="transition: opacity 2s ease-in;">
+        <video class="story-video" loop muted playsinline>
+            <source src="https://res.cloudinary.com/dzklkjmiq/video/upload/v1723188004/tikmate.app_7395667278567591169_hd_rrh9nl.mp4" type="video/mp4">
+        </video>
+        <div class="story-content absolute inset-0 w-full h-full overflow-y-auto no-scrollbar z-10 p-6 text-white">
+            <div class="story-text-wrapper max-w-md mx-auto space-y-12 min-h-[101vh] flex flex-col justify-center">
+                <div>
+                    <h1 class="font-serif text-5xl font-bold leading-tight text-center">A Thousand Miles</h1>
+                    <p class="text-lg leading-relaxed mt-12">Mock content for the second story. Distance means so little when someone means so much.</p>
+                    <p class="text-2xl font-serif text-center italic my-16">"Every mile feels like a lifetime without you."</p>
+                    <p class="text-lg leading-relaxed">This is placeholder text you can replace with your own beautiful story.</p>
+                </div>
+            </div>
+        </div>
+        <button onclick="showHomePage()" class="absolute top-4 left-4 z-20 bg-black bg-opacity-50 text-white p-3 rounded-full hover:bg-opacity-75 transition">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+        </button>
+    </div>
+
+    <!-- Story Page 3 -->
+    <div id="story-page-3" class="page-container story-page hidden opacity-0" style="transition: opacity 2s ease-in;">
+        <video class="story-video" loop muted playsinline>
+            <source src="https://res.cloudinary.com/dzklkjmiq/video/upload/v1723188004/tikmate.app_7395667278567591169_hd_rrh9nl.mp4" type="video/mp4">
+        </video>
+        <div class="story-content absolute inset-0 w-full h-full overflow-y-auto no-scrollbar z-10 p-6 text-white">
+            <div class="story-text-wrapper max-w-md mx-auto space-y-12 min-h-[101vh] flex flex-col justify-center">
+                <div>
+                    <h1 class="font-serif text-5xl font-bold leading-tight text-center">Our Little Infinity</h1>
+                    <p class="text-lg leading-relaxed mt-12">Placeholder content for the third memory. Some infinities are bigger than other infinities.</p>
+                    <p class="text-2xl font-serif text-center italic my-16">"We found forever in the numbered days."</p>
+                    <p class="text-lg leading-relaxed">Feel free to replace this mock content with your own story.</p>
+                </div>
+            </div>
+        </div>
         <button onclick="showHomePage()" class="absolute top-4 left-4 z-20 bg-black bg-opacity-50 text-white p-3 rounded-full hover:bg-opacity-75 transition">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
         </button>
@@ -171,22 +218,17 @@
 
     <script>
         const loadingPage = document.getElementById('loading-page');
-        const loadingIndicator = document.getElementById('loading-indicator');
-        const enterButton = document.getElementById('enter-button');
-        const soundMessage = document.getElementById('sound-message');
         const homePage = document.getElementById('home-page');
+        const homeContent = document.getElementById('home-content');
         const homeBgVideo = document.getElementById('home-bg-video');
-        const storyPage = document.getElementById('story-page');
-        const video = document.getElementById('bg-video');
         const particleContainer = document.getElementById('particle-container');
         const portalContainer = document.getElementById('portal-container');
-        const storyContent = document.getElementById('story-content');
-        const storyTextWrapper = document.getElementById('story-text-wrapper');
         const PETAL_COUNT = 50;
         const PORTAL_SPARK_COUNT = 150;
         const animationDuration = 4000;
 
         let lastClickedButtonRect = null;
+        let activeStoryPageId = null;
         let portalAnimationId = null;
 
         const petalSVG = `<svg viewBox="0 0 50 50" style="overflow: visible;">
@@ -206,6 +248,9 @@
 
         // --- Loading Logic ---
         function onVideoReady() {
+            const loadingIndicator = document.getElementById('loading-indicator');
+            const enterButton = document.getElementById('enter-button');
+            const soundMessage = document.getElementById('sound-message');
             loadingIndicator.style.display = 'none';
             enterButton.classList.remove('hidden');
             soundMessage.classList.remove('hidden');
@@ -370,27 +415,36 @@
             }
         }
 
-        function handleFirstScroll() {
-            storyContent.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
-            storyTextWrapper.style.opacity = '1';
+        function handleStoryScroll(event) {
+            const target = event.target;
+            const textWrapper = target.querySelector('.story-text-wrapper');
+            if (target.scrollTop > 20) {
+                target.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+                textWrapper.style.opacity = '1';
+            } else {
+                target.style.backgroundColor = 'rgba(0, 0, 0, 0)';
+                textWrapper.style.opacity = '0';
+            }
         }
 
-        function showStoryPage(buttonElement) {
+        function showStoryPage(buttonElement, pageId) {
             triggerHapticFeedback();
             lastClickedButtonRect = buttonElement.getBoundingClientRect();
+            activeStoryPageId = pageId;
 
-            // --- FIX: Stop homepage video and audio ---
+            const storyPage = document.getElementById(pageId);
+            const storyContent = storyPage.querySelector('.story-content');
+            const video = storyPage.querySelector('.story-video');
+
             homeBgVideo.pause();
-
             animatePortal(lastClickedButtonRect, 'opening');
+            
+            homeContent.classList.add('home-content-fade-out');
             
             setTimeout(() => {
                 createPetals(lastClickedButtonRect, 'out');
                 animatePetals(lastClickedButtonRect, 'out');
             }, 200);
-
-            homePage.style.transition = 'opacity 1.5s ease-out 0.5s';
-            homePage.style.opacity = '0';
             
             storyPage.classList.remove('hidden');
             setTimeout(() => {
@@ -404,7 +458,7 @@
                         video.play();
                     });
                 }
-                storyContent.addEventListener('scroll', handleFirstScroll, { once: true });
+                storyContent.addEventListener('scroll', handleStoryScroll);
             }, 1200);
 
             setTimeout(() => {
@@ -417,25 +471,30 @@
             triggerHapticFeedback();
             const rect = lastClickedButtonRect || { top: window.innerHeight / 2, left: window.innerWidth / 2, width: 0, height: 0 };
             
-            // --- FIX: Stop story video and audio ---
-            video.pause();
+            const storyPage = document.getElementById(activeStoryPageId);
+            const storyContent = storyPage.querySelector('.story-content');
+            const video = storyPage.querySelector('.story-video');
+            const textWrapper = storyPage.querySelector('.story-text-wrapper');
 
+            video.pause();
             animatePortal(rect, 'closing');
             createPetals(rect, 'in');
             animatePetals(rect, 'in');
 
             storyPage.style.opacity = '0';
             
+            storyContent.removeEventListener('scroll', handleStoryScroll);
+            
             setTimeout(() => {
                 storyContent.style.backgroundColor = 'rgba(0, 0, 0, 0)';
-                storyTextWrapper.style.opacity = '0';
+                textWrapper.style.opacity = '0';
             }, 500);
 
 
             setTimeout(() => {
                 homePage.classList.remove('hidden');
-                homePage.style.opacity = '1';
-                // --- FIX: Resume homepage video ---
+                homeContent.classList.remove('home-content-fade-out');
+                homeContent.classList.add('home-content-fade-in');
                 homeBgVideo.play();
             }, 1000);
             
@@ -445,6 +504,7 @@
             setTimeout(() => {
                 storyPage.classList.add('hidden');
                 particleContainer.innerHTML = '';
+                homeContent.classList.remove('home-content-fade-in');
             }, animationDuration);
         }
     </script>
