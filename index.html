@@ -30,7 +30,7 @@
             will-change: opacity;
         }
 
-        #bg-video {
+        #home-bg-video, #bg-video {
             position: fixed;
             top: 50%;
             left: 50%;
@@ -43,10 +43,6 @@
             object-fit: cover;
         }
         
-        #home-page {
-            background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
-        }
-
         @keyframes glow {
             0%, 100% { text-shadow: 0 0 10px #fff, 0 0 20px #8a2be2, 0 0 30px #8a2be2; }
             50% { text-shadow: 0 0 20px #fff, 0 0 30px #9370db, 0 0 40px #9370db; }
@@ -88,13 +84,53 @@
             opacity: 0;
         }
 
+        /* --- Story Page Reveal Styles --- */
+        #story-content {
+            background-color: rgba(0, 0, 0, 0); /* Initially transparent */
+            transition: background-color 1.5s ease-out;
+        }
+
+        #story-text-wrapper {
+            opacity: 0;
+            transition: opacity 1.5s ease-out;
+        }
+
+        /* --- Loading Screen Styles --- */
+        #loading-page {
+            background: #090a0f;
+            z-index: 200;
+        }
+        #loading-indicator span {
+            animation: fadeIn 2s ease-in-out infinite alternate;
+        }
+        #loading-indicator span:nth-child(2) { animation-delay: 0.3s; }
+        #loading-indicator span:nth-child(3) { animation-delay: 0.6s; }
+
     </style>
 </head>
 <body class="text-white h-screen">
 
+    <!-- Loading Screen -->
+    <div id="loading-page" class="page-container flex flex-col items-center justify-center p-8 text-center">
+        <div id="loading-indicator" class="text-2xl font-serif text-gray-400">
+            <span>Loading</span>
+            <span>Universe</span>
+            <span>...</span>
+        </div>
+        <button id="enter-button" onclick="enterHomepage()" class="hidden mt-8 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 px-8 rounded-lg shadow-lg transition-all duration-500 opacity-0 scale-90">
+            Enter
+        </button>
+        <p id="sound-message" class="hidden mt-4 text-gray-500 text-sm transition-opacity duration-500 opacity-0">
+            Sound On. Please turn up your volume.
+        </p>
+    </div>
+
     <!-- Homepage View -->
-    <div id="home-page" class="page-container flex flex-col items-center justify-center p-8 text-center">
-        <div id="home-content" class="z-10 w-full">
+    <div id="home-page" class="page-container hidden flex-col items-center justify-center p-8 text-center">
+        <video id="home-bg-video" loop muted playsinline>
+            <source src="https://res.cloudinary.com/dzklkjmiq/video/upload/background_izstkz.mp4" type="video/mp4">
+        </video>
+        <div id="home-content" class="z-10 w-full bg-black bg-opacity-40 py-10 rounded-lg">
             <h1 class="font-serif text-8xl font-bold mb-2 text-white tracking-wider animate-title-glow">HEJE</h1>
             <p class="text-gray-300 mb-16 text-lg italic animate-subtitle-fade">As always, and always will.</p>
             <div class="max-w-sm mx-auto space-y-4">
@@ -117,8 +153,8 @@
             <source src="https://res.cloudinary.com/dzklkjmiq/video/upload/v1723188004/tikmate.app_7395667278567591169_hd_rrh9nl.mp4" type="video/mp4">
         </video>
 
-        <div id="story-content" class="absolute inset-0 w-full h-full overflow-y-auto no-scrollbar z-10 bg-black bg-opacity-40 p-6 pt-20 pb-20 text-white">
-            <div class="max-w-md mx-auto space-y-12">
+        <div id="story-content" class="absolute inset-0 w-full h-full overflow-y-auto no-scrollbar z-10 p-6 pt-20 pb-20 text-white">
+            <div id="story-text-wrapper" class="max-w-md mx-auto space-y-12">
                 <h1 class="font-serif text-5xl font-bold leading-tight text-center">The Night We Met</h1>
                 <p class="text-lg leading-relaxed">The city was a blur of neon lights and hurried footsteps...</p>
                 <p class="text-2xl font-serif text-center italic my-16">"And in that moment, I swear we were infinite."</p>
@@ -136,11 +172,18 @@
     <div id="particle-container"></div>
 
     <script>
+        const loadingPage = document.getElementById('loading-page');
+        const loadingIndicator = document.getElementById('loading-indicator');
+        const enterButton = document.getElementById('enter-button');
+        const soundMessage = document.getElementById('sound-message');
         const homePage = document.getElementById('home-page');
+        const homeBgVideo = document.getElementById('home-bg-video');
         const storyPage = document.getElementById('story-page');
         const video = document.getElementById('bg-video');
         const particleContainer = document.getElementById('particle-container');
         const portalContainer = document.getElementById('portal-container');
+        const storyContent = document.getElementById('story-content');
+        const storyTextWrapper = document.getElementById('story-text-wrapper');
         const PETAL_COUNT = 50;
         const PORTAL_SPARK_COUNT = 150;
         const animationDuration = 4000;
@@ -162,6 +205,44 @@
             <circle cx="25" cy="25" r="7" fill="#FFD700"/>
         </svg>`;
         const petalColors = ['#FFFFFF', '#F5F5F5', '#FAFAFA'];
+
+        // --- Loading Logic ---
+        function onVideoReady() {
+            loadingIndicator.style.display = 'none';
+            enterButton.classList.remove('hidden');
+            soundMessage.classList.remove('hidden');
+            
+            // Pre-play the video silently in the background
+            homeBgVideo.play().catch(e => console.error("Pre-play failed", e));
+
+            setTimeout(() => {
+                enterButton.style.opacity = '1';
+                enterButton.style.transform = 'scale(1)';
+                soundMessage.style.opacity = '1';
+            }, 100);
+        }
+
+        window.addEventListener('load', () => {
+            homeBgVideo.addEventListener('canplaythrough', onVideoReady, { once: true });
+            if (homeBgVideo.readyState >= 4) { // HAVE_ENOUGH_DATA
+                onVideoReady();
+            }
+        });
+
+        function enterHomepage() {
+            triggerHapticFeedback();
+            loadingPage.style.transition = 'opacity 1s ease-out';
+            loadingPage.style.opacity = '0';
+            
+            homePage.classList.remove('hidden');
+            
+            // Just unmute the video, it's already playing
+            homeBgVideo.muted = false;
+
+            setTimeout(() => {
+                loadingPage.style.display = 'none';
+            }, 1000);
+        }
 
         function triggerHapticFeedback() {
             if (navigator.vibrate) navigator.vibrate(50);
@@ -280,6 +361,11 @@
             }
         }
 
+        function handleFirstScroll() {
+            storyContent.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+            storyTextWrapper.style.opacity = '1';
+        }
+
         function showStoryPage(buttonElement) {
             triggerHapticFeedback();
             lastClickedButtonRect = buttonElement.getBoundingClientRect();
@@ -306,6 +392,7 @@
                         video.play();
                     });
                 }
+                storyContent.addEventListener('scroll', handleFirstScroll, { once: true });
             }, 1200);
 
             setTimeout(() => {
@@ -323,6 +410,13 @@
             animatePetals(rect, 'in');
 
             storyPage.style.opacity = '0';
+            
+            setTimeout(() => {
+                storyContent.style.backgroundColor = 'rgba(0, 0, 0, 0)';
+                storyTextWrapper.style.opacity = '0';
+            }, 500);
+
+
             setTimeout(() => {
                 homePage.classList.remove('hidden');
                 homePage.style.opacity = '1';
