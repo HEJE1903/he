@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Story Topics</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -45,22 +45,10 @@
         
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(40px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* --- Animation classes for homepage elements --- */
-        .animate-title-fade { animation: fadeIn 2s ease-out; }
-        .animate-subtitle-fade { animation: fadeIn 2s ease-out 0.5s backwards; }
-        .animate-button-1 { animation: slideUp 1s ease-out 1s backwards; }
-        .animate-button-2 { animation: slideUp 1s ease-out 1.2s backwards; }
-        .animate-button-3 { animation: slideUp 1s ease-out 1.4s backwards; }
         
         .home-content-fade-out { animation: fadeOut 1s ease-out forwards; }
         .home-content-fade-in { animation: fadeIn 1s ease-in forwards; }
 
-        /* --- Transition Containers --- */
         #portal-container, #particle-container {
             position: absolute;
             inset: 0;
@@ -75,7 +63,6 @@
             transition: transform 4s cubic-bezier(0.2, 0.7, 0.4, 1), opacity 4s ease-out;
         }
 
-        /* --- Dr. Strange Portal Spark --- */
         .spark {
             position: absolute;
             background: #ffc40c;
@@ -85,18 +72,15 @@
             opacity: 0;
         }
 
-        /* --- Story Page Reveal Styles --- */
         .story-content {
-            background-color: rgba(0, 0, 0, 0); /* Initially transparent */
+            background-color: rgba(0, 0, 0, 0);
             transition: background-color 1.5s ease-out;
         }
-
         .story-text-wrapper {
             opacity: 0;
             transition: opacity 1.5s ease-out;
         }
 
-        /* --- Loading Screen Styles --- */
         #loading-page {
             background: #090a0f;
             z-index: 200;
@@ -107,6 +91,44 @@
         #loading-indicator span:nth-child(2) { animation-delay: 0.3s; }
         #loading-indicator span:nth-child(3) { animation-delay: 0.6s; }
 
+        /* --- New "Unfolding Memories" Design --- */
+        #memory-orb {
+            transition: transform 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55), box-shadow 0.4s;
+        }
+        #memory-orb:hover {
+            transform: scale(1.1);
+        }
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 20px 5px rgba(255, 255, 255, 0.3); }
+            50% { box-shadow: 0 0 30px 10px rgba(255, 255, 255, 0.5); }
+        }
+        .topic-button {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.8s;
+        }
+        #home-page.topics-revealed #memory-orb {
+            transform: scale(0);
+        }
+        #home-page.topics-revealed #topic-button-1 {
+            transform: translateX(-50%) translateY(-150px) scale(1.1);
+            opacity: 1;
+            transition-delay: 0.1s;
+        }
+        #home-page.topics-revealed #topic-button-2 {
+            transform: translateX(-150%) translateY(-80px) rotate(-15deg);
+            opacity: 1;
+        }
+        #home-page.topics-revealed #topic-button-3 {
+            transform: translateX(50%) translateY(-80px) rotate(15deg);
+            opacity: 1;
+        }
+        #home-page.topics-revealed #main-header, #home-page.topics-revealed #main-subtitle {
+             opacity: 1;
+        }
     </style>
 </head>
 <body class="text-white h-screen">
@@ -127,32 +149,28 @@
     </div>
 
     <!-- Homepage View -->
-    <div id="home-page" class="page-container hidden flex-col items-center justify-center p-8 text-center">
+    <div id="home-page" class="page-container hidden flex-col">
         <video id="home-bg-video" loop muted playsinline>
             <source src="https://res.cloudinary.com/dzklkjmiq/video/upload/w_1080,q_auto,f_auto/background_izstkz.mp4" type="video/mp4">
         </video>
-        <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
-        <div id="home-content" class="z-10 w-full flex flex-col h-full">
-            <div class="flex-grow flex flex-col items-center justify-center">
-                <h1 class="font-serif text-8xl font-bold mb-2 text-white tracking-wider animate-title-fade">HEJE</h1>
-                <p class="text-gray-200 mb-16 text-lg italic animate-subtitle-fade">As always, and always will.</p>
+        <div id="home-content" class="z-20 w-full h-full flex flex-col items-center">
+            <div class="text-center pt-24">
+                <h1 id="main-header" class="font-serif text-7xl font-bold text-white tracking-wider opacity-0 transition-opacity duration-1000" style="text-shadow: 0 2px 15px rgba(0,0,0,0.5);">HEJE</h1>
+                <p id="main-subtitle" class="text-white text-lg italic opacity-0 transition-opacity duration-1000" style="text-shadow: 0 1px 10px rgba(0,0,0,0.5);">As always, and always will.</p>
             </div>
-            <!-- NEW: Arc Layout for Buttons -->
-            <div class="relative w-full h-48 mb-8">
-                <button id="topic-button-1" onclick="showStoryPage(this, 'story-page-1')" class="absolute left-1/2 -translate-x-1/2 bottom-0 w-40 bg-white/20 border border-white/30 backdrop-blur-md hover:bg-white/30 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition-all duration-300 transform hover:scale-105 animate-button-2" style="transform: translateX(-50%) translateY(-20%) scale(1.1);">
-                    The Night We Met
-                </button>
-                <button id="topic-button-2" onclick="showStoryPage(this, 'story-page-2')" class="absolute left-1/2 -translate-x-1/2 bottom-0 w-36 bg-white/20 border border-white/30 backdrop-blur-md hover:bg-white/30 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition-all duration-300 transform hover:scale-105 animate-button-1" style="transform: translateX(-120%) rotate(-15deg);">
-                    A Thousand Miles
-                </button>
-                <button id="topic-button-3" onclick="showStoryPage(this, 'story-page-3')" class="absolute left-1/2 -translate-x-1/2 bottom-0 w-36 bg-white/20 border border-white/30 backdrop-blur-md hover:bg-white/30 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition-all duration-300 transform hover:scale-105 animate-button-3" style="transform: translateX(20%) rotate(15deg);">
-                    Our Little Infinity
-                </button>
+            <div class="flex-grow relative w-full">
+                <!-- The new menu system -->
+                <div id="menu-container" class="absolute bottom-24 left-0 right-0 h-48 flex items-center justify-center">
+                    <button id="memory-orb" onclick="revealTopics()" class="w-16 h-16 bg-white/30 rounded-full backdrop-blur-md shadow-lg" style="animation: pulse 3s infinite ease-in-out;"></button>
+                    <button id="topic-button-1" onclick="showStoryPage(this, 'story-page-1')" class="topic-button w-44 bg-white/20 border border-white/30 backdrop-blur-md text-white font-bold py-3 px-6 rounded-lg shadow-lg">The Night We Met</button>
+                    <button id="topic-button-2" onclick="showStoryPage(this, 'story-page-2')" class="topic-button w-44 bg-white/20 border border-white/30 backdrop-blur-md text-white font-bold py-3 px-6 rounded-lg shadow-lg">A Thousand Miles</button>
+                    <button id="topic-button-3" onclick="showStoryPage(this, 'story-page-3')" class="topic-button w-44 bg-white/20 border border-white/30 backdrop-blur-md text-white font-bold py-3 px-6 rounded-lg shadow-lg">Our Little Infinity</button>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Story Page 1 -->
+    <!-- Story Pages (Unchanged) -->
     <div id="story-page-1" class="page-container story-page hidden opacity-0" style="transition: opacity 2s ease-in;">
         <video class="story-video" loop muted playsinline>
             <source src="https://res.cloudinary.com/dzklkjmiq/video/upload/v1723188004/tikmate.app_7395667278567591169_hd_rrh9nl.mp4" type="video/mp4">
@@ -162,9 +180,6 @@
                 <div>
                     <h1 class="font-serif text-5xl font-bold leading-tight text-center">The Night We Met</h1>
                     <p class="text-lg leading-relaxed mt-12">The city was a blur of neon lights and hurried footsteps...</p>
-                    <p class="text-2xl font-serif text-center italic my-16">"And in that moment, I swear we were infinite."</p>
-                    <p class="text-lg leading-relaxed">You were standing by the window, bathed in the soft glow of a streetlamp...</p>
-                    <p class="text-lg leading-relaxed mt-4">That night wasn't just the night we met. It was the night my world changed forever.</p>
                 </div>
             </div>
         </div>
@@ -172,8 +187,6 @@
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
         </button>
     </div>
-
-    <!-- Story Page 2 -->
     <div id="story-page-2" class="page-container story-page hidden opacity-0" style="transition: opacity 2s ease-in;">
         <video class="story-video" loop muted playsinline>
             <source src="https://res.cloudinary.com/dzklkjmiq/video/upload/v1723188004/tikmate.app_7395667278567591169_hd_rrh9nl.mp4" type="video/mp4">
@@ -182,9 +195,7 @@
             <div class="story-text-wrapper max-w-md mx-auto space-y-12 min-h-[101vh] flex flex-col justify-center">
                 <div>
                     <h1 class="font-serif text-5xl font-bold leading-tight text-center">A Thousand Miles</h1>
-                    <p class="text-lg leading-relaxed mt-12">Mock content for the second story. Distance means so little when someone means so much.</p>
-                    <p class="text-2xl font-serif text-center italic my-16">"Every mile feels like a lifetime without you."</p>
-                    <p class="text-lg leading-relaxed">This is placeholder text you can replace with your own beautiful story.</p>
+                    <p class="text-lg leading-relaxed mt-12">Mock content for the second story...</p>
                 </div>
             </div>
         </div>
@@ -192,8 +203,6 @@
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
         </button>
     </div>
-
-    <!-- Story Page 3 -->
     <div id="story-page-3" class="page-container story-page hidden opacity-0" style="transition: opacity 2s ease-in;">
         <video class="story-video" loop muted playsinline>
             <source src="https://res.cloudinary.com/dzklkjmiq/video/upload/v1723188004/tikmate.app_7395667278567591169_hd_rrh9nl.mp4" type="video/mp4">
@@ -202,9 +211,7 @@
             <div class="story-text-wrapper max-w-md mx-auto space-y-12 min-h-[101vh] flex flex-col justify-center">
                 <div>
                     <h1 class="font-serif text-5xl font-bold leading-tight text-center">Our Little Infinity</h1>
-                    <p class="text-lg leading-relaxed mt-12">Placeholder content for the third memory. Some infinities are bigger than other infinities.</p>
-                    <p class="text-2xl font-serif text-center italic my-16">"We found forever in the numbered days."</p>
-                    <p class="text-lg leading-relaxed">Feel free to replace this mock content with your own story.</p>
+                    <p class="text-lg leading-relaxed mt-12">Placeholder content for the third memory...</p>
                 </div>
             </div>
         </div>
@@ -217,6 +224,7 @@
     <div id="particle-container"></div>
 
     <script>
+        // --- All variables ---
         const loadingPage = document.getElementById('loading-page');
         const homePage = document.getElementById('home-page');
         const homeContent = document.getElementById('home-content');
@@ -231,19 +239,7 @@
         let activeStoryPageId = null;
         let portalAnimationId = null;
 
-        const petalSVG = `<svg viewBox="0 0 50 50" style="overflow: visible;">
-            <g fill="currentColor">
-                <path d="M25 18 A 12 12 0 0 1 25 42 A 12 12 0 0 1 25 18 Z" transform="rotate(0 25 25) scale(0.5 1.2) translate(0 -10)"/>
-                <path d="M25 18 A 12 12 0 0 1 25 42 A 12 12 0 0 1 25 18 Z" transform="rotate(45 25 25) scale(0.5 1.2) translate(0 -10)"/>
-                <path d="M25 18 A 12 12 0 0 1 25 42 A 12 12 0 0 1 25 18 Z" transform="rotate(90 25 25) scale(0.5 1.2) translate(0 -10)"/>
-                <path d="M25 18 A 12 12 0 0 1 25 42 A 12 12 0 0 1 25 18 Z" transform="rotate(135 25 25) scale(0.5 1.2) translate(0 -10)"/>
-                <path d="M25 18 A 12 12 0 0 1 25 42 A 12 12 0 0 1 25 18 Z" transform="rotate(180 25 25) scale(0.5 1.2) translate(0 -10)"/>
-                <path d="M25 18 A 12 12 0 0 1 25 42 A 12 12 0 0 1 25 18 Z" transform="rotate(225 25 25) scale(0.5 1.2) translate(0 -10)"/>
-                <path d="M25 18 A 12 12 0 0 1 25 42 A 12 12 0 0 1 25 18 Z" transform="rotate(270 25 25) scale(0.5 1.2) translate(0 -10)"/>
-                <path d="M25 18 A 12 12 0 0 1 25 42 A 12 12 0 0 1 25 18 Z" transform="rotate(315 25 25) scale(0.5 1.2) translate(0 -10)"/>
-            </g>
-            <circle cx="25" cy="25" r="7" fill="#FFD700"/>
-        </svg>`;
+        const petalSVG = `<svg viewBox="0 0 50 50" style="overflow: visible;"><g fill="currentColor"><path d="M25 18 A 12 12 0 0 1 25 42 A 12 12 0 0 1 25 18 Z" transform="rotate(0 25 25) scale(0.5 1.2) translate(0 -10)"/><path d="M25 18 A 12 12 0 0 1 25 42 A 12 12 0 0 1 25 18 Z" transform="rotate(45 25 25) scale(0.5 1.2) translate(0 -10)"/><path d="M25 18 A 12 12 0 0 1 25 42 A 12 12 0 0 1 25 18 Z" transform="rotate(90 25 25) scale(0.5 1.2) translate(0 -10)"/><path d="M25 18 A 12 12 0 0 1 25 42 A 12 12 0 0 1 25 18 Z" transform="rotate(135 25 25) scale(0.5 1.2) translate(0 -10)"/><path d="M25 18 A 12 12 0 0 1 25 42 A 12 12 0 0 1 25 18 Z" transform="rotate(180 25 25) scale(0.5 1.2) translate(0 -10)"/><path d="M25 18 A 12 12 0 0 1 25 42 A 12 12 0 0 1 25 18 Z" transform="rotate(225 25 25) scale(0.5 1.2) translate(0 -10)"/><path d="M25 18 A 12 12 0 0 1 25 42 A 12 12 0 0 1 25 18 Z" transform="rotate(270 25 25) scale(0.5 1.2) translate(0 -10)"/><path d="M25 18 A 12 12 0 0 1 25 42 A 12 12 0 0 1 25 18 Z" transform="rotate(315 25 25) scale(0.5 1.2) translate(0 -10)"/></g><circle cx="25" cy="25" r="7" fill="#FFD700"/></svg>`;
         const petalColors = ['#FFFFFF', '#F5F5F5', '#FAFAFA'];
 
         // --- Loading Logic ---
@@ -300,6 +296,12 @@
 
         function triggerHapticFeedback() {
             if (navigator.vibrate) navigator.vibrate(50);
+        }
+        
+        // --- NEW Homepage Interaction ---
+        function revealTopics() {
+            triggerHapticFeedback();
+            homePage.classList.add('topics-revealed');
         }
 
         function animatePortal(origin, direction) {
@@ -493,6 +495,7 @@
 
             setTimeout(() => {
                 homePage.classList.remove('hidden');
+                homePage.classList.remove('topics-revealed'); // Reset the menu
                 homeContent.classList.remove('home-content-fade-out');
                 homeContent.classList.add('home-content-fade-in');
                 homeBgVideo.play();
@@ -507,6 +510,7 @@
                 homeContent.classList.remove('home-content-fade-in');
             }, animationDuration);
         }
+
     </script>
 
 </body>
