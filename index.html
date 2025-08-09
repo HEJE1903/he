@@ -93,10 +93,10 @@
 
         @keyframes float {
             0%, 100% {
-                transform: translateY(0);
+                transform: translateX(-50%) translateY(0);
             }
             50% {
-                transform: translateY(-15px);
+                transform: translateX(-50%) translateY(-15px);
             }
         }
 
@@ -106,47 +106,74 @@
         }
 
         #memory-orb {
+            position: absolute;
+            left: 50%;
+            top: 30%; 
+            transform: translateX(-50%);
             background: radial-gradient(circle at 30% 30%, rgba(255, 235, 59, 0.8), rgba(255, 193, 7, 0.2));
-            transition: transform 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55), box-shadow 0.4s;
+            transition: transform 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55), box-shadow 0.4s, opacity 0.5s, top 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275), bottom 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             animation: pulse 3s infinite ease-in-out, float 4s infinite ease-in-out;
         }
         
         #memory-orb:hover {
-            transform: scale(1.1);
+            transform: translateX(-50%) scale(1.1);
             animation-play-state: paused;
         }
 
-        /* MODIFIED: Removed absolute positioning from topic buttons */
         .topic-button {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
             opacity: 0;
-            transform: translateY(-20px);
             transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.8s;
             pointer-events: none;
         }
         
         #home-page.topics-revealed .topic-button {
-            opacity: 1;
-            transform: translateY(0);
             pointer-events: auto;
         }
         
-        /* MODIFIED: Staggered animation delay for buttons */
-        #home-page.topics-revealed #topic-button-1 { transition-delay: 0s; }
-        #home-page.topics-revealed #topic-button-2 { transition-delay: 0.1s; }
-        #home-page.topics-revealed #topic-button-3 { transition-delay: 0.2s; }
-        
-        /* MODIFIED: New wrapper for buttons to control their visibility and layout */
-        #topic-buttons-wrapper {
-            opacity: 0;
-            transition: opacity 0.5s;
+        #home-page.topics-revealed #memory-orb {
+            top: auto; 
+            bottom: 5%; 
+            transform: translateX(-50%) scale(0.8);
+            opacity: 0.7;
         }
-        #home-page.topics-revealed #topic-buttons-wrapper {
+
+        #home-page.topics-revealed #topic-button-1 {
+            transform: translateX(-50%) translateY(-280px);
+            opacity: 1;
+            transition-delay: 0.2s;
+        }
+        #home-page.topics-revealed #topic-button-2 {
+            transform: translateX(-50%) translateY(-200px);
+            opacity: 1;
+            transition-delay: 0.1s;
+        }
+        #home-page.topics-revealed #topic-button-3 {
+            transform: translateX(-50%) translateY(-120px);
             opacity: 1;
         }
 
-        /* MODIFIED: Orb now moves down when topics are revealed */
-        #home-page.topics-revealed #memory-orb {
-            transform: translateY(120px) scale(0.8);
+        @media (min-width: 768px) {
+            #home-page.topics-revealed #topic-button-1 {
+                transform: translateX(-50%) translateY(-150px) scale(1.1);
+                transition-delay: 0.1s;
+            }
+            #home-page.topics-revealed #topic-button-2 {
+                transform: translateX(-150%) translateY(-80px) rotate(-15deg);
+                transition-delay: 0s;
+            }
+            #home-page.topics-revealed #topic-button-3 {
+                transform: translateX(50%) translateY(-80px) rotate(15deg);
+                transition-delay: 0s;
+            }
+            #home-page.topics-revealed #memory-orb {
+                transform: translateX(-50%) scale(0.8);
+                opacity: 0.7;
+                bottom: 5%;
+            }
         }
 
         #home-page.topics-revealed #main-header, #home-page.topics-revealed #main-subtitle {
@@ -181,10 +208,9 @@
                 <h1 id="main-header" class="font-serif text-7xl font-bold text-amber-900 tracking-wider opacity-0 transition-opacity duration-1000">HEJE</h1>
                 <p id="main-subtitle" class="text-amber-900 text-lg italic opacity-0 transition-opacity duration-1000">As always, and always will.</p>
             </div>
-            <!-- MODIFIED: Restructured menu container for new layout -->
-            <div class="flex-grow relative w-full flex justify-center pt-16">
-                <div id="menu-container" class="relative flex flex-col items-center gap-8">
-                    <div id="topic-buttons-wrapper" class="flex flex-wrap justify-center gap-4">
+            <div class="flex-grow relative w-full flex justify-center pt-8">
+                <div id="menu-container" class="absolute inset-0">
+                    <div id="topic-buttons-wrapper" class="absolute bottom-0 left-0 right-0 h-full flex items-center justify-center">
                         <button id="topic-button-1" data-page="story-page-1" class="topic-button w-48 flex items-center justify-center gap-2 bg-white/40 border border-white/50 backdrop-blur-lg text-amber-900 font-bold py-3 px-6 rounded-lg shadow-lg">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
                             <span>The Night We Met</span>
@@ -198,6 +224,7 @@
                             <span>Our Little Infinity</span>
                         </button>
                     </div>
+                    <!-- MODIFIED: Moved the orb to be the last element in the container -->
                     <button id="memory-orb" class="w-20 h-20 rounded-full shadow-lg border border-yellow-400/50 backdrop-blur-md"></button>
                 </div>
             </div>
