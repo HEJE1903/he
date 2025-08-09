@@ -91,18 +91,31 @@
         #loading-indicator span:nth-child(2) { animation-delay: 0.3s; }
         #loading-indicator span:nth-child(3) { animation-delay: 0.6s; }
 
-        /* --- New "Unfolding Memories" Design --- */
-        #memory-orb {
-            background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.8), rgba(255,255,255,0.2));
-            transition: transform 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55), box-shadow 0.4s;
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-15px);
+            }
         }
-        #memory-orb:hover {
-            transform: scale(1.1);
-        }
+
         @keyframes pulse {
             0%, 100% { box-shadow: 0 0 20px 5px rgba(255, 255, 255, 0.3); }
             50% { box-shadow: 0 0 30px 10px rgba(255, 255, 255, 0.5); }
         }
+
+        #memory-orb {
+            background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.8), rgba(255,255,255,0.2));
+            transition: transform 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55), box-shadow 0.4s;
+            animation: pulse 3s infinite ease-in-out, float 4s infinite ease-in-out;
+        }
+        
+        #memory-orb:hover {
+            transform: scale(1.1);
+            animation-play-state: paused;
+        }
+
         .topic-button {
             position: absolute;
             bottom: 0;
@@ -110,23 +123,43 @@
             transform: translateX(-50%);
             opacity: 0;
             transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.8s;
+            pointer-events: none;
         }
-        #home-page.topics-revealed #memory-orb {
-            transform: scale(0);
+        
+        #home-page.topics-revealed .topic-button {
+            pointer-events: auto;
         }
+        
         #home-page.topics-revealed #topic-button-1 {
-            transform: translateX(-50%) translateY(-150px) scale(1.1);
+            transform: translateX(-50%) translateY(-240px);
+            opacity: 1;
+            transition-delay: 0.2s;
+        }
+        #home-page.topics-revealed #topic-button-2 {
+            transform: translateX(-50%) translateY(-160px);
             opacity: 1;
             transition-delay: 0.1s;
         }
-        #home-page.topics-revealed #topic-button-2 {
-            transform: translateX(-150%) translateY(-80px) rotate(-15deg);
-            opacity: 1;
-        }
         #home-page.topics-revealed #topic-button-3 {
-            transform: translateX(50%) translateY(-80px) rotate(15deg);
+            transform: translateX(-50%) translateY(-80px);
             opacity: 1;
         }
+
+        @media (min-width: 768px) {
+            #home-page.topics-revealed #topic-button-1 {
+                transform: translateX(-50%) translateY(-150px) scale(1.1);
+                transition-delay: 0.1s;
+            }
+            #home-page.topics-revealed #topic-button-2 {
+                transform: translateX(-150%) translateY(-80px) rotate(-15deg);
+                transition-delay: 0s;
+            }
+            #home-page.topics-revealed #topic-button-3 {
+                transform: translateX(50%) translateY(-80px) rotate(15deg);
+                transition-delay: 0s;
+            }
+        }
+
         #home-page.topics-revealed #main-header, #home-page.topics-revealed #main-subtitle {
              opacity: 1;
         }
@@ -141,7 +174,7 @@
             <span>Universe</span>
             <span>...</span>
         </div>
-        <button id="enter-button" onclick="enterHomepage()" class="hidden mt-8 bg-amber-600 hover:bg-amber-700 text-white font-bold py-4 px-8 rounded-lg shadow-lg transition-all duration-500 opacity-0 scale-90">
+        <button id="enter-button" class="hidden mt-8 bg-amber-600 hover:bg-amber-700 text-white font-bold py-4 px-8 rounded-lg shadow-lg transition-all duration-500 opacity-0 scale-90">
             Enter
         </button>
         <p id="sound-message" class="hidden mt-4 text-gray-500 text-sm transition-opacity duration-500 opacity-0">
@@ -151,8 +184,8 @@
 
     <!-- Homepage View -->
     <div id="home-page" class="page-container hidden flex-col">
-        <video id="home-bg-video" loop muted playsinline>
-            <source src="https://res.cloudinary.com/dzklkjmiq/video/upload/w_1080,q_auto,f_auto/background_izstkz.mp4" type="video/mp4">
+        <video id="home-bg-video" class="video-player-container" loop muted playsinline>
+             <source src="https://res.cloudinary.com/dzklkjmiq/video/upload/w_1080,q_auto,f_auto/background_izstkz.mp4" type="video/mp4">
         </video>
         <div id="home-content" class="z-20 w-full h-full flex flex-col items-center">
             <div class="text-center pt-24">
@@ -160,19 +193,18 @@
                 <p id="main-subtitle" class="text-white text-lg italic opacity-0 transition-opacity duration-1000" style="text-shadow: 0 1px 10px rgba(0,0,0,0.5);">As always, and always will.</p>
             </div>
             <div class="flex-grow relative w-full">
-                <!-- The new menu system -->
                 <div id="menu-container" class="absolute bottom-24 left-0 right-0 h-48 flex items-center justify-center">
-                    <button id="memory-orb" onclick="revealTopics()" class="w-20 h-20 rounded-full backdrop-blur-md shadow-lg border border-white/30" style="animation: pulse 3s infinite ease-in-out;"></button>
-                    <button id="topic-button-1" onclick="showStoryPage(this, 'story-page-1')" class="topic-button w-48 flex items-center justify-center gap-2 bg-white/40 border border-white/50 backdrop-blur-lg text-black font-bold py-3 px-6 rounded-lg shadow-lg">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+                    <button id="memory-orb" class="w-20 h-20 rounded-full backdrop-blur-md shadow-lg border border-white/30"></button>
+                    <button id="topic-button-1" data-page="story-page-1" class="topic-button w-48 flex items-center justify-center gap-2 bg-white/40 border border-white/50 backdrop-blur-lg text-black font-bold py-3 px-6 rounded-lg shadow-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
                         <span>The Night We Met</span>
                     </button>
-                    <button id="topic-button-2" onclick="showStoryPage(this, 'story-page-2')" class="topic-button w-48 flex items-center justify-center gap-2 bg-white/40 border border-white/50 backdrop-blur-lg text-black font-bold py-3 px-6 rounded-lg shadow-lg">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7"/><path d="m19 19-7-7 7-7"/></svg>
+                    <button id="topic-button-2" data-page="story-page-2" class="topic-button w-48 flex items-center justify-center gap-2 bg-white/40 border border-white/50 backdrop-blur-lg text-black font-bold py-3 px-6 rounded-lg shadow-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7"/><path d="m19 19-7-7 7-7"/></svg>
                         <span>A Thousand Miles</span>
                     </button>
-                    <button id="topic-button-3" onclick="showStoryPage(this, 'story-page-3')" class="topic-button w-48 flex items-center justify-center gap-2 bg-white/40 border border-white/50 backdrop-blur-lg text-black font-bold py-3 px-6 rounded-lg shadow-lg">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.42 9.58 13.58 12 10.42 14.42 M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20Z"/></svg>
+                    <button id="topic-button-3" data-page="story-page-3" class="topic-button w-48 flex items-center justify-center gap-2 bg-white/40 border border-white/50 backdrop-blur-lg text-black font-bold py-3 px-6 rounded-lg shadow-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.42 9.58 13.58 12 10.42 14.42 M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20Z"/></svg>
                         <span>Our Little Infinity</span>
                     </button>
                 </div>
@@ -180,9 +212,9 @@
         </div>
     </div>
 
-    <!-- Story Pages (Unchanged) -->
+    <!-- Story Pages -->
     <div id="story-page-1" class="page-container story-page hidden opacity-0" style="transition: opacity 2s ease-in;">
-        <video class="story-video" loop muted playsinline>
+        <video id="story-video-1" class="story-video" loop muted playsinline>
             <source src="https://res.cloudinary.com/dzklkjmiq/video/upload/v1723188004/tikmate.app_7395667278567591169_hd_rrh9nl.mp4" type="video/mp4">
         </video>
         <div class="story-content absolute inset-0 w-full h-full overflow-y-auto no-scrollbar z-10 p-6 text-white">
@@ -193,12 +225,12 @@
                 </div>
             </div>
         </div>
-        <button onclick="showHomePage()" class="absolute top-4 left-4 z-20 bg-black bg-opacity-50 text-white p-3 rounded-full hover:bg-opacity-75 transition">
+        <button class="back-button absolute top-4 left-4 z-20 bg-black bg-opacity-50 text-white p-3 rounded-full hover:bg-opacity-75 transition">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
         </button>
     </div>
     <div id="story-page-2" class="page-container story-page hidden opacity-0" style="transition: opacity 2s ease-in;">
-        <video class="story-video" loop muted playsinline>
+        <video id="story-video-2" class="story-video" loop muted playsinline>
             <source src="https://res.cloudinary.com/dzklkjmiq/video/upload/v1723188004/tikmate.app_7395667278567591169_hd_rrh9nl.mp4" type="video/mp4">
         </video>
         <div class="story-content absolute inset-0 w-full h-full overflow-y-auto no-scrollbar z-10 p-6 text-white">
@@ -209,12 +241,12 @@
                 </div>
             </div>
         </div>
-        <button onclick="showHomePage()" class="absolute top-4 left-4 z-20 bg-black bg-opacity-50 text-white p-3 rounded-full hover:bg-opacity-75 transition">
+        <button class="back-button absolute top-4 left-4 z-20 bg-black bg-opacity-50 text-white p-3 rounded-full hover:bg-opacity-75 transition">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
         </button>
     </div>
     <div id="story-page-3" class="page-container story-page hidden opacity-0" style="transition: opacity 2s ease-in;">
-        <video class="story-video" loop muted playsinline>
+        <video id="story-video-3" class="story-video" loop muted playsinline>
             <source src="https://res.cloudinary.com/dzklkjmiq/video/upload/v1723188004/tikmate.app_7395667278567591169_hd_rrh9nl.mp4" type="video/mp4">
         </video>
         <div class="story-content absolute inset-0 w-full h-full overflow-y-auto no-scrollbar z-10 p-6 text-white">
@@ -225,7 +257,7 @@
                 </div>
             </div>
         </div>
-        <button onclick="showHomePage()" class="absolute top-4 left-4 z-20 bg-black bg-opacity-50 text-white p-3 rounded-full hover:bg-opacity-75 transition">
+        <button class="back-button absolute top-4 left-4 z-20 bg-black bg-opacity-50 text-white p-3 rounded-full hover:bg-opacity-75 transition">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
         </button>
     </div>
@@ -234,13 +266,14 @@
     <div id="particle-container"></div>
 
     <script>
-        // --- All variables ---
+    window.addEventListener('load', () => {
         const loadingPage = document.getElementById('loading-page');
         const homePage = document.getElementById('home-page');
         const homeContent = document.getElementById('home-content');
-        const homeBgVideo = document.getElementById('home-bg-video');
         const particleContainer = document.getElementById('particle-container');
         const portalContainer = document.getElementById('portal-container');
+        const homeBgVideo = document.getElementById('home-bg-video');
+
         const PETAL_COUNT = 50;
         const PORTAL_SPARK_COUNT = 150;
         const animationDuration = 4000;
@@ -252,23 +285,18 @@
         const petalSVG = `<svg viewBox="0 0 50 50" style="overflow: visible;"><g fill="currentColor"><path d="M25 18 A 12 12 0 0 1 25 42 A 12 12 0 0 1 25 18 Z" transform="rotate(0 25 25) scale(0.5 1.2) translate(0 -10)"/><path d="M25 18 A 12 12 0 0 1 25 42 A 12 12 0 0 1 25 18 Z" transform="rotate(45 25 25) scale(0.5 1.2) translate(0 -10)"/><path d="M25 18 A 12 12 0 0 1 25 42 A 12 12 0 0 1 25 18 Z" transform="rotate(90 25 25) scale(0.5 1.2) translate(0 -10)"/><path d="M25 18 A 12 12 0 0 1 25 42 A 12 12 0 0 1 25 18 Z" transform="rotate(135 25 25) scale(0.5 1.2) translate(0 -10)"/><path d="M25 18 A 12 12 0 0 1 25 42 A 12 12 0 0 1 25 18 Z" transform="rotate(180 25 25) scale(0.5 1.2) translate(0 -10)"/><path d="M25 18 A 12 12 0 0 1 25 42 A 12 12 0 0 1 25 18 Z" transform="rotate(225 25 25) scale(0.5 1.2) translate(0 -10)"/><path d="M25 18 A 12 12 0 0 1 25 42 A 12 12 0 0 1 25 18 Z" transform="rotate(270 25 25) scale(0.5 1.2) translate(0 -10)"/><path d="M25 18 A 12 12 0 0 1 25 42 A 12 12 0 0 1 25 18 Z" transform="rotate(315 25 25) scale(0.5 1.2) translate(0 -10)"/></g><circle cx="25" cy="25" r="7" fill="#FFD700"/></svg>`;
         const petalColors = ['#FFFFFF', '#F5F5F5', '#FAFAFA'];
 
-        // --- Loading Logic ---
-        function onVideoReady() {
-            const loadingIndicator = document.getElementById('loading-indicator');
-            const enterButton = document.getElementById('enter-button');
-            const soundMessage = document.getElementById('sound-message');
-            loadingIndicator.style.display = 'none';
-            enterButton.classList.remove('hidden');
-            soundMessage.classList.remove('hidden');
-            
-            setTimeout(() => {
-                enterButton.style.opacity = '1';
-                enterButton.style.transform = 'scale(1)';
-                soundMessage.style.opacity = '1';
-            }, 100);
-        }
-
-        window.addEventListener('load', onVideoReady);
+        const loadingIndicator = document.getElementById('loading-indicator');
+        const enterButton = document.getElementById('enter-button');
+        const soundMessage = document.getElementById('sound-message');
+        loadingIndicator.style.display = 'none';
+        enterButton.classList.remove('hidden');
+        soundMessage.classList.remove('hidden');
+        
+        setTimeout(() => {
+            enterButton.style.opacity = '1';
+            enterButton.style.transform = 'scale(1)';
+            soundMessage.style.opacity = '1';
+        }, 100);
 
         function enterHomepage() {
             triggerHapticFeedback();
@@ -308,10 +336,9 @@
             if (navigator.vibrate) navigator.vibrate(50);
         }
         
-        // --- NEW Homepage Interaction ---
         function revealTopics() {
             triggerHapticFeedback();
-            homePage.classList.add('topics-revealed');
+            homePage.classList.toggle('topics-revealed');
         }
 
         function animatePortal(origin, direction) {
@@ -446,7 +473,7 @@
 
             const storyPage = document.getElementById(pageId);
             const storyContent = storyPage.querySelector('.story-content');
-            const video = storyPage.querySelector('.story-video');
+            const storyVideo = storyPage.querySelector('.story-video');
 
             homeBgVideo.pause();
             animatePortal(lastClickedButtonRect, 'opening');
@@ -461,15 +488,8 @@
             storyPage.classList.remove('hidden');
             setTimeout(() => {
                 storyPage.style.opacity = '1';
-                video.muted = false;
-                const playPromise = video.play();
-                if (playPromise) {
-                    playPromise.catch(e => {
-                        console.log("Autoplay with sound failed, playing muted.", e);
-                        video.muted = true;
-                        video.play();
-                    });
-                }
+                storyVideo.muted = false;
+                storyVideo.play();
                 storyContent.addEventListener('scroll', handleStoryScroll);
             }, 1200);
 
@@ -485,10 +505,10 @@
             
             const storyPage = document.getElementById(activeStoryPageId);
             const storyContent = storyPage.querySelector('.story-content');
-            const video = storyPage.querySelector('.story-video');
+            const storyVideo = storyPage.querySelector('.story-video');
             const textWrapper = storyPage.querySelector('.story-text-wrapper');
 
-            video.pause();
+            storyVideo.pause();
             animatePortal(rect, 'closing');
             createPetals(rect, 'in');
             animatePetals(rect, 'in');
@@ -505,14 +525,14 @@
 
             setTimeout(() => {
                 homePage.classList.remove('hidden');
-                homePage.classList.remove('topics-revealed'); // Reset the menu
+                // MODIFIED: This line is now removed to keep the menu state
+                // homePage.classList.remove('topics-revealed'); 
                 homeContent.classList.remove('home-content-fade-out');
                 homeContent.classList.add('home-content-fade-in');
                 homeBgVideo.play();
             }, 1000);
             
-            video.currentTime = 0;
-            video.muted = true;
+            storyVideo.muted = true;
 
             setTimeout(() => {
                 storyPage.classList.add('hidden');
@@ -521,6 +541,29 @@
             }, animationDuration);
         }
 
+        // --- Programmatic Event Listeners ---
+        document.getElementById('enter-button').addEventListener('click', enterHomepage);
+        document.getElementById('memory-orb').addEventListener('click', revealTopics);
+        
+        document.querySelectorAll('.topic-button').forEach(button => {
+            button.addEventListener('click', () => showStoryPage(button, button.dataset.page));
+        });
+
+        document.querySelectorAll('.back-button').forEach(button => {
+            button.addEventListener('click', showHomePage);
+        });
+
+        // --- Seamless Video Looping ---
+        document.querySelectorAll('video').forEach(video => {
+            video.addEventListener('timeupdate', function() {
+                const buffer = 0.4;
+                if (this.duration && (this.duration - this.currentTime <= buffer)) {
+                    this.currentTime = 0;
+                    this.play();
+                }
+            });
+        });
+    });
     </script>
 
 </body>
