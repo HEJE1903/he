@@ -43,9 +43,10 @@
             object-fit: cover;
         }
         
+        /* --- Warm Golden Glow --- */
         @keyframes glow {
-            0%, 100% { text-shadow: 0 0 10px #fff, 0 0 20px #8a2be2, 0 0 30px #8a2be2; }
-            50% { text-shadow: 0 0 20px #fff, 0 0 30px #9370db, 0 0 40px #9370db; }
+            0%, 100% { text-shadow: 0 0 10px #fff, 0 0 20px #ffd700, 0 0 30px #ffc40c; }
+            50% { text-shadow: 0 0 20px #fff, 0 0 30px #ffc40c, 0 0 40px #ff8c00; }
         }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
@@ -117,7 +118,7 @@
             <span>Universe</span>
             <span>...</span>
         </div>
-        <button id="enter-button" onclick="enterHomepage()" class="hidden mt-8 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 px-8 rounded-lg shadow-lg transition-all duration-500 opacity-0 scale-90">
+        <button id="enter-button" onclick="enterHomepage()" class="hidden mt-8 bg-amber-600 hover:bg-amber-700 text-white font-bold py-4 px-8 rounded-lg shadow-lg transition-all duration-500 opacity-0 scale-90">
             Enter
         </button>
         <p id="sound-message" class="hidden mt-4 text-gray-500 text-sm transition-opacity duration-500 opacity-0">
@@ -130,20 +131,19 @@
         <video id="home-bg-video" loop muted playsinline>
             <source src="https://res.cloudinary.com/dzklkjmiq/video/upload/w_1080,q_auto,f_auto/background_izstkz.mp4" type="video/mp4">
         </video>
-        <!-- New semi-transparent overlay for readability -->
-        <div class="absolute inset-0 bg-black/60 z-0"></div>
+        <!-- REMOVED: The dark overlay div is gone -->
         <div id="home-content" class="z-10 w-full">
-            <h1 class="font-serif text-8xl font-bold mb-2 text-white tracking-wider animate-title-glow">HEJE</h1>
-            <p class="text-gray-300 mb-16 text-lg italic animate-subtitle-fade">As always, and always will.</p>
+            <h1 class="font-serif text-8xl font-bold mb-2 text-white tracking-wider animate-title-glow" style="text-shadow: 0 2px 10px rgba(0,0,0,0.5);">HEJE</h1>
+            <p class="text-gray-200 mb-16 text-lg italic animate-subtitle-fade" style="text-shadow: 0 1px 5px rgba(0,0,0,0.5);">As always, and always will.</p>
             <div class="max-w-sm mx-auto space-y-4">
-                <!-- New "glassmorphism" button style -->
-                <button id="topic-button-1" onclick="showStoryPage(this)" class="w-full bg-white/10 border border-white/20 backdrop-blur-sm hover:bg-white/20 text-white font-bold py-4 px-6 rounded-lg shadow-lg transition-all duration-300 transform hover:scale-105 animate-button-1">
+                <!-- UPDATED: New "frosted glass" button style -->
+                <button id="topic-button-1" onclick="showStoryPage(this)" class="w-full bg-white/10 border border-white/20 backdrop-blur-md hover:bg-white/20 text-white font-bold py-4 px-6 rounded-lg shadow-lg transition-all duration-300 transform hover:scale-105 animate-button-1">
                     The Night We Met
                 </button>
-                <button class="w-full bg-white/5 border border-white/10 backdrop-blur-sm text-gray-500 font-bold py-4 px-6 rounded-lg cursor-not-allowed animate-button-2" disabled>
+                <button class="w-full bg-black/10 border border-white/10 backdrop-blur-md text-gray-400 font-bold py-4 px-6 rounded-lg cursor-not-allowed animate-button-2" disabled>
                     Topic 2 (Coming Soon)
                 </button>
-                <button class="w-full bg-white/5 border border-white/10 backdrop-blur-sm text-gray-500 font-bold py-4 px-6 rounded-lg cursor-not-allowed animate-button-3" disabled>
+                <button class="w-full bg-black/10 border border-white/10 backdrop-blur-md text-gray-400 font-bold py-4 px-6 rounded-lg cursor-not-allowed animate-button-3" disabled>
                     Topic 3 (Coming Soon)
                 </button>
             </div>
@@ -210,7 +210,7 @@
         const petalColors = ['#FFFFFF', '#F5F5F5', '#FAFAFA'];
 
         // --- Loading Logic ---
-        function showEnterButton() {
+        function onVideoReady() {
             loadingIndicator.style.display = 'none';
             enterButton.classList.remove('hidden');
             soundMessage.classList.remove('hidden');
@@ -222,8 +222,12 @@
             }, 100);
         }
 
-        // Show the enter button as soon as the page loads, without waiting for the video.
-        window.addEventListener('load', showEnterButton);
+        window.addEventListener('load', () => {
+            homeBgVideo.addEventListener('canplaythrough', onVideoReady, { once: true });
+            if (homeBgVideo.readyState >= 4) { // HAVE_ENOUGH_DATA
+                onVideoReady();
+            }
+        });
 
         function enterHomepage() {
             triggerHapticFeedback();
@@ -232,13 +236,26 @@
             
             homePage.classList.remove('hidden');
             
-            // The user's click gives permission. Now we unmute AND play.
+            // Unmute and play the video
             homeBgVideo.muted = false;
+            homeBgVideo.volume = 0; // Start at 0 volume
             const playPromise = homeBgVideo.play();
+
             if (playPromise !== undefined) {
-                playPromise.catch(error => {
-                    // If it still fails (e.g., low power mode), play muted.
-                    console.log("Playback with sound failed, playing muted.", error);
+                playPromise.then(() => {
+                    // --- NEW: Fade in the volume ---
+                    let currentVolume = 0;
+                    const fadeAudio = setInterval(() => {
+                        if (currentVolume < 1) {
+                            currentVolume += 0.05;
+                            // Clamp the volume to 1 to avoid errors
+                            homeBgVideo.volume = Math.min(currentVolume, 1);
+                        } else {
+                            clearInterval(fadeAudio);
+                        }
+                    }, 75); // Increase volume every 75ms for a 1.5s fade
+                }).catch(error => {
+                    console.log("Autoplay with sound failed, playing muted as fallback.", error);
                     homeBgVideo.muted = true;
                     homeBgVideo.play();
                 });
