@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Night We Met</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Playfair+Display:ital,wght@1,400;1,700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .playfair-display {
+            font-family: 'Playfair Display', serif;
+        }
+        /* Custom styles for the progress bar */
+        .progress-bar-container {
+            height: 4px;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 2px;
+            cursor: pointer;
+        }
+        .progress-bar {
+            height: 100%;
+            background-color: #fff;
+            border-radius: 2px;
+            position: relative;
+            transition: width 0.1s linear;
+        }
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            right: -6px;
+            top: -4px;
+            width: 12px;
+            height: 12px;
+            background-color: #fff;
+            border-radius: 50%;
+        }
+        .player-controls button {
+            transition: transform 0.2s ease-in-out, opacity 0.2s ease-in-out;
+        }
+        .player-controls button:hover:not(:disabled) {
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body class="bg-black">
+
+    <!-- Background Image -->
+    <div class="absolute inset-0 w-full h-full bg-cover bg-center z-0" style="background-image: url('https://images.unsplash.com/photo-1639056610940-d7e9b0af3a99?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');">
+        <!-- Overlay -->
+        <div class="absolute inset-0 w-full h-full bg-black opacity-50"></div>
+    </div>
+
+    <!-- Content -->
+    <div class="relative z-10 flex flex-col items-center justify-center min-h-screen text-white p-6">
+        
+        <div class="w-full max-w-sm text-center">
+            <!-- Album Art / Photo -->
+            <div class="mb-8 shadow-2xl rounded-lg overflow-hidden">
+                <img src="https://images.unsplash.com/photo-1639056610940-d7e9b0af3a99?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="The Night We Met" class="w-full h-auto">
+            </div>
+
+            <!-- Song Info -->
+            <h1 class="text-3xl font-bold playfair-display">The Night We Met</h1>
+            <p class="text-lg text-gray-300 mt-1">Lord Huron</p>
+            <p class="text-sm text-gray-400">(Slowed + Reverb)</p>
+            
+            <!-- Audio Player -->
+            <div class="mt-8">
+                <!-- Set preload to "metadata" to fetch duration early -->
+                <audio id="song" src="https://res.cloudinary.com/dzklkjmiq/video/upload/v1754551138/The_Night_We_met_Slowed_and_Reverb_Tiktok_Version_qpc0c4.mp3" preload="metadata" crossorigin="anonymous"></audio>
+
+                <!-- Loading/Error Indicator -->
+                <div id="loading" class="text-white mb-4" style="display: none;">Loading...</div>
+
+                <!-- Progress Bar -->
+                <div id="progress-container" class="progress-bar-container w-full">
+                    <div id="progress-bar" class="progress-bar" style="width: 0%;"></div>
+                </div>
+
+                <!-- Time Display -->
+                <div class="flex justify-between text-xs text-gray-400 mt-2">
+                    <span id="current-time">0:00</span>
+                    <span id="duration">0:00</span>
+                </div>
+
+                <!-- Controls -->
+                <div class="player-controls flex items-center justify-center space-x-8 mt-4">
+                    <button id="prev-btn" class="text-2xl text-gray-300 hover:text-white">
+                        <i class="fas fa-backward"></i>
+                    </button>
+                    <button id="play-pause-btn" class="text-5xl w-16 h-16 flex items-center justify-center rounded-full bg-white text-black hover:bg-gray-200">
+                        <i id="play-pause-icon" class="fas fa-play"></i>
+                    </button>
+                    <button id="next-btn" class="text-2xl text-gray-300 hover:text-white">
+                        <i class="fas fa-forward"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const song = document.getElementById('song');
+        const playPauseBtn = document.getElementById('play-pause-btn');
+        const playPauseIcon = document.getElementById('play-pause-icon');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const progressBar = document.getElementById('progress-bar');
+        const progressContainer = document.getElementById('progress-container');
+        const currentTimeEl = document.getElementById('current-time');
+        const durationEl = document.getElementById('duration');
+        const loadingIndicator = document.getElementById('loading');
+        
+        let hasLoadedMeta = false;
+
+        // Function to play or pause the song
+        function togglePlayPause() {
+            if (song.paused) {
+                // The play() method returns a promise.
+                const playPromise = song.play();
+
+                if (playPromise !== undefined) {
+                    playPromise.catch(error => {
+                        // Autoplay was prevented or another error occurred.
+                        console.error("Playback error:", error);
+                        // We display a generic error because the browser might not provide a specific one.
+                        loadingIndicator.textContent = "Could not play audio.";
+                        loadingIndicator.style.display = 'block';
+                        // Ensure the UI is in a paused state if play fails.
+                        playPauseIcon.classList.remove('fa-pause');
+                        playPauseIcon.classList.add('fa-play');
+                    });
+                }
+            } else {
+                song.pause();
+            }
+        }
+
+        // Update progress bar and time
+        function updateProgress() {
+            if (hasLoadedMeta && song.duration) {
+                const { duration, currentTime } = song;
+                const progressPercent = (currentTime / duration) * 100;
+                progressBar.style.width = `${progressPercent}%`;
+                currentTimeEl.textContent = formatTime(currentTime);
+            }
+        }
+        
+        // Format time to minutes:seconds
+        function formatTime(seconds) {
+            const secs = Math.floor(seconds) || 0;
+            const minutes = Math.floor(secs / 60);
+            const remainingSeconds = secs % 60;
+            return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
+        }
+
+        // Set progress bar on click
+        function setProgress(e) {
+            // Only allow seeking if metadata has loaded.
+            if (hasLoadedMeta && song.duration) {
+                const width = this.clientWidth;
+                const clickX = e.offsetX;
+                song.currentTime = (clickX / width) * song.duration;
+            }
+        }
+        
+        // Set total duration display
+        function setInitialDuration() {
+             hasLoadedMeta = true;
+             durationEl.textContent = formatTime(song.duration);
+        }
+        
+        // Rewind 10 seconds
+        function rewindSong() {
+            if (hasLoadedMeta) {
+                song.currentTime = Math.max(0, song.currentTime - 10);
+            }
+        }
+        
+        // Forward 10 seconds
+        function forwardSong() {
+            if (hasLoadedMeta && song.duration) {
+                song.currentTime = Math.min(song.duration, song.currentTime + 10);
+            }
+        }
+
+        // --- Event Listeners ---
+        playPauseBtn.addEventListener('click', togglePlayPause);
+        
+        // Update icon when song is paused for any reason (e.g., call ended)
+        song.addEventListener('pause', () => {
+             playPauseIcon.classList.remove('fa-pause');
+             playPauseIcon.classList.add('fa-play');
+        });
+        
+        // This event fires once playback has started.
+        song.addEventListener('playing', () => {
+            loadingIndicator.style.display = 'none';
+            playPauseIcon.classList.remove('fa-play');
+            playPauseIcon.classList.add('fa-pause');
+        });
+
+        // This event fires when metadata (like duration) is loaded.
+        song.addEventListener('loadedmetadata', setInitialDuration);
+        
+        song.addEventListener('timeupdate', updateProgress);
+        progressContainer.addEventListener('click', setProgress);
+        song.addEventListener('ended', () => {
+            // The 'pause' event will handle the icon change.
+            song.currentTime = 0; // Reset to beginning
+        });
+        prevBtn.addEventListener('click', rewindSong);
+        nextBtn.addEventListener('click', forwardSong);
+
+        // Listen for errors on the audio element for better debugging
+        song.addEventListener('error', (e) => {
+            const error = e.target.error;
+            console.error("Audio Element Error:", error);
+            loadingIndicator.style.display = 'block';
+            let errorMessage = "Failed to load audio.";
+            if (error) {
+                switch (error.code) {
+                    case error.MEDIA_ERR_ABORTED:
+                        errorMessage = "The audio playback was aborted.";
+                        break;
+                    case error.MEDIA_ERR_NETWORK:
+                        errorMessage = "A network error caused the audio to fail.";
+                        break;
+                    case error.MEDIA_ERR_DECODE:
+                        errorMessage = "The audio could not be decoded.";
+                        break;
+                    case error.MEDIA_ERR_SRC_NOT_SUPPORTED:
+                        errorMessage = "The audio format is not supported by your browser.";
+                        break;
+                    default:
+                        errorMessage = "An unknown error occurred while loading the audio.";
+                        break;
+                }
+            }
+            loadingIndicator.textContent = errorMessage;
+        });
+
+    </script>
+</body>
+</html>
