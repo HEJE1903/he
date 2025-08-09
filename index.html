@@ -3,342 +3,167 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Night We Met</title>
+    <title>Story Topics</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Playfair+Display:ital,wght@1,400;1,700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Inter', sans-serif;
+            overscroll-behavior: none; /* Prevents pull-to-refresh on mobile */
         }
-        .playfair-display {
+        .font-serif {
             font-family: 'Playfair Display', serif;
         }
-        /* Custom styles for the progress bar */
-        .progress-bar-container {
-            height: 4px;
-            background-color: rgba(255, 255, 255, 0.2);
-            border-radius: 2px;
-            cursor: pointer;
+        /* Hide scrollbar for cleaner look */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
         }
-        .progress-bar {
-            height: 100%;
-            background-color: #fff;
-            border-radius: 2px;
-            position: relative;
-            transition: width 0.1s linear;
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
         }
-        .progress-bar::after {
-            content: '';
-            position: absolute;
-            right: -6px;
-            top: -4px;
-            width: 12px;
-            height: 12px;
-            background-color: #fff;
-            border-radius: 50%;
+        /* Style for the video background */
+        #bg-video {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            z-index: -1;
+            transform: translateX(-50%) translateY(-50%);
+            object-fit: cover;
         }
-        .player-controls button {
-            transition: transform 0.2s ease-in-out, opacity 0.2s ease-in-out;
+        /* Fade in animation */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
-        .player-controls button:hover:not(:disabled) {
-            transform: scale(1.1);
-        }
-        /* Lyrics styles */
-        #lyrics-container {
-            height: 110px; /* Adjust height as needed */
-            overflow-y: auto;
-            -ms-overflow-style: none;  /* IE and Edge */
-            scrollbar-width: none;  /* Firefox */
-            scroll-behavior: smooth;
-            text-align: center;
-        }
-        #lyrics-container::-webkit-scrollbar {
-            display: none; /* Chrome, Safari, and Opera */
-        }
-        .lyric-line {
-            transition: opacity 0.5s ease, transform 0.5s ease;
-            opacity: 0.5;
-            font-size: 1.125rem; /* text-lg */
-            line-height: 1.75rem;
-            padding: 4px 0;
-        }
-        .lyric-line.active {
-            opacity: 1;
-            transform: scale(1.05);
-            color: #ffffff;
-            font-weight: bold;
+        .fade-in {
+            animation: fadeIn 1s ease-in-out;
         }
     </style>
 </head>
-<body class="bg-black">
+<body class="bg-gray-900 text-white h-screen overflow-hidden">
 
-    <!-- Background Image -->
-    <div class="absolute inset-0 w-full h-full bg-cover bg-center z-0" style="background-image: url('https://images.unsplash.com/photo-1639056610940-d7e9b0af3a99?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');">
-        <!-- Overlay -->
-        <div class="absolute inset-0 w-full h-full bg-black opacity-50"></div>
-    </div>
-
-    <!-- Content -->
-    <div class="relative z-10 flex flex-col items-center justify-center min-h-screen text-white p-6">
-        
-        <div class="w-full max-w-sm text-center">
-            <!-- Album Art / Photo -->
-            <div class="mb-6 shadow-2xl rounded-lg overflow-hidden">
-                <img src="https://images.unsplash.com/photo-1639056610940-d7e9b0af3a99?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="The Night We Met" class="w-full h-auto">
-            </div>
-
-            <!-- Song Info -->
-            <h1 class="text-3xl font-bold playfair-display">The Night We Met</h1>
-            <p class="text-lg text-gray-300 mt-1">Lord Huron</p>
-            <p class="text-sm text-gray-400 mb-6">(Slowed + Reverb)</p>
-
-            <!-- Lyrics Container -->
-            <div id="lyrics-container" class="mb-6">
-                <!-- Lyrics will be dynamically inserted here -->
-            </div>
-            
-            <!-- Audio Player -->
-            <div class="mt-8">
-                <audio id="song" src="https://res.cloudinary.com/dzklkjmiq/video/upload/v1754552079/The_Night_We_met_Slowed_and_Reverb_Tiktok_Version-_AudioTrimmer.com_2_p5whpv.mp3" preload="metadata" crossorigin="anonymous"></audio>
-
-                <!-- Loading/Error Indicator -->
-                <div id="loading" class="text-white mb-4" style="display: none;">Loading...</div>
-
-                <!-- Progress Bar -->
-                <div id="progress-container" class="progress-bar-container w-full">
-                    <div id="progress-bar" class="progress-bar" style="width: 0%;"></div>
-                </div>
-
-                <!-- Time Display -->
-                <div class="flex justify-between text-xs text-gray-400 mt-2">
-                    <span id="current-time">0:00</span>
-                    <span id="duration">0:00</span>
-                </div>
-
-                <!-- Controls -->
-                <div class="player-controls flex items-center justify-center space-x-8 mt-4">
-                    <button id="prev-btn" class="text-2xl text-gray-300 hover:text-white">
-                        <i class="fas fa-backward"></i>
-                    </button>
-                    <button id="play-pause-btn" class="text-5xl w-16 h-16 flex items-center justify-center rounded-full bg-white text-black hover:bg-gray-200">
-                        <i id="play-pause-icon" class="fas fa-play"></i>
-                    </button>
-                    <button id="next-btn" class="text-2xl text-gray-300 hover:text-white">
-                        <i class="fas fa-forward"></i>
-                    </button>
-                </div>
-            </div>
+    <!-- Homepage View -->
+    <div id="home-page" class="flex flex-col items-center justify-center h-full p-8 text-center fade-in">
+        <h1 class="font-serif text-5xl font-bold mb-4">Choose a Story</h1>
+        <p class="text-gray-400 mb-12">Select a memory to relive.</p>
+        <div class="w-full max-w-sm space-y-4">
+            <button onclick="showStoryPage()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 px-6 rounded-lg shadow-lg transition-transform transform hover:scale-105">
+                The Night We Met
+            </button>
+            <button class="w-full bg-gray-700 text-gray-400 font-bold py-4 px-6 rounded-lg cursor-not-allowed" disabled>
+                Topic 2 (Coming Soon)
+            </button>
+            <button class="w-full bg-gray-700 text-gray-400 font-bold py-4 px-6 rounded-lg cursor-not-allowed" disabled>
+                Topic 3 (Coming Soon)
+            </button>
         </div>
     </div>
 
-    <script>
-        const song = document.getElementById('song');
-        const playPauseBtn = document.getElementById('play-pause-btn');
-        const playPauseIcon = document.getElementById('play-pause-icon');
-        const prevBtn = document.getElementById('prev-btn');
-        const nextBtn = document.getElementById('next-btn');
-        const progressBar = document.getElementById('progress-bar');
-        const progressContainer = document.getElementById('progress-container');
-        const currentTimeEl = document.getElementById('current-time');
-        const durationEl = document.getElementById('duration');
-        const loadingIndicator = document.getElementById('loading');
-        const lyricsContainer = document.getElementById('lyrics-container');
-        
-        // --- Lyrics Data ---
-        const lyricsData = [
-            { time: 24, text: "I am not the only traveler" },
-            { time: 29, text: "Who has not repaid his debt" },
-            { time: 35, text: "I've been searching for a trail to follow again" },
-            { time: 41, text: "Take me back to the night we met" },
-            { time: 46, text: "And then I can tell myself" },
-            { time: 50, text: "What the hell I'm supposed to do" },
-            { time: 56, text: "And then I can tell myself" },
-            { time: 61, text: "Not to ride along with you" },
-            { time: 67, text: "I had all and then most of you" },
-            { time: 72, text: "Some and now none of you" },
-            { time: 78, text: "Take me back to the night we met" },
-            { time: 83, text: "I don't know what I'm supposed to do" },
-            { time: 88, text: "Haunted by the ghost of you" },
-            { time: 94, text: "Oh, take me back to the night we met" },
-            { time: 121, text: "When the night was full of terrors" },
-            { time: 126, text: "And your eyes were filled with tears" },
-            { time: 132, text: "When you had not touched me yet" },
-            { time: 137, text: "Oh, take me back to the night we met" },
-            { time: 143, text: "I had all and then most of you" },
-            { time: 148, text: "Some and now none of you" },
-            { time: 154, text: "Take me back to the night we met" },
-            { time: 159, text: "I don't know what I'm supposed to do" },
-            { time: 164, text: "Haunted by the ghost of you" },
-            { time: 170, text: "Take me back to the night we met" }
-        ];
+    <!-- Story Page View -->
+    <div id="story-page" class="hidden h-full w-full">
+        <!-- Background Video -->
+        <video id="bg-video" loop muted playsinline>
+            <!-- Using a direct link to the video file for better control -->
+            <source src="https://res.cloudinary.com/dzklkjmiq/video/upload/v1723188004/tikmate.app_7395667278567591169_hd_rrh9nl.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
 
-        let currentLyricIndex = -1;
-        let hasLoadedMeta = false;
-        let isAudioInitialized = false;
-        
-        // Populate lyrics container
-        lyricsContainer.innerHTML = lyricsData.map((line, index) => 
-            `<p class="lyric-line" data-index="${index}">${line.text}</p>`
-        ).join('');
-        const lyricElements = document.querySelectorAll('.lyric-line');
+        <!-- Unmute/Start Overlay -->
+        <div id="start-overlay" class="absolute inset-0 bg-black bg-opacity-50 flex flex-col items-center justify-center z-20 cursor-pointer" onclick="startStory()">
+            <div class="text-center">
+                <svg class="w-16 h-16 mx-auto mb-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <h2 class="font-serif text-3xl font-bold">Tap to Begin</h2>
+                <p class="text-gray-300">Sound will play automatically</p>
+            </div>
+        </div>
 
-        function playSong() {
-            const playPromise = song.play();
-            if (playPromise !== undefined) {
-                playPromise.catch(error => {
-                    console.error("Playback error:", error);
-                    loadingIndicator.textContent = "Could not play audio.";
-                    loadingIndicator.style.display = 'block';
-                });
-            }
-        }
-
-        function pauseSong() {
-            song.pause();
-        }
-
-        function handlePlayPause() {
-            if (!isAudioInitialized) {
-                try {
-                    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                    if (audioContext.state === 'suspended') {
-                        audioContext.resume();
-                    }
-                } catch (e) {
-                    console.error("Web Audio API is not supported or failed to initialize.", e);
-                }
-                isAudioInitialized = true;
-            }
-
-            if (song.paused) {
-                playSong();
-            } else {
-                pauseSong();
-            }
-        }
-
-        function updateProgress() {
-            if (hasLoadedMeta && song.duration) {
-                const { duration, currentTime } = song;
-                const progressPercent = (currentTime / duration) * 100;
-                progressBar.style.width = `${progressPercent}%`;
-                currentTimeEl.textContent = formatTime(currentTime);
+        <!-- Scrollable Story Content -->
+        <div id="story-content" class="absolute inset-0 w-full h-full overflow-y-auto no-scrollbar z-10 bg-black bg-opacity-40 p-6 pt-20 pb-20 text-white opacity-0 transition-opacity duration-1000">
+            <div class="max-w-md mx-auto space-y-12">
+                <h1 class="font-serif text-5xl font-bold leading-tight text-center">The Night We Met</h1>
                 
-                // --- Sync Lyrics ---
-                syncLyrics(currentTime);
-            }
-        }
-        
-        function syncLyrics(currentTime) {
-            let newLyricIndex = -1;
-            for (let i = 0; i < lyricsData.length; i++) {
-                if (currentTime >= lyricsData[i].time) {
-                    newLyricIndex = i;
-                }
-            }
+                <p class="text-lg leading-relaxed">
+                    The city was a blur of neon lights and hurried footsteps, but in that small, crowded room, everything went quiet. Time seemed to slow down, stretching the moment into an eternity.
+                </p>
 
-            if (newLyricIndex !== currentLyricIndex) {
-                if (currentLyricIndex !== -1) {
-                    lyricElements[currentLyricIndex].classList.remove('active');
-                }
-                if (newLyricIndex !== -1) {
-                    const activeLyric = lyricElements[newLyricIndex];
-                    activeLyric.classList.add('active');
-                    // Scroll the active lyric into view
-                    activeLyric.scrollIntoView({ block: 'center', inline: 'nearest' });
-                }
-                currentLyricIndex = newLyricIndex;
-            }
-        }
+                <p class="text-lg leading-relaxed">
+                    I remember the song that was playing, a faint melody weaving through the chatter. It felt like a soundtrack written just for us.
+                </p>
+                
+                <p class="text-2xl font-serif text-center italic my-16">
+                    "And in that moment, I swear we were infinite."
+                </p>
 
-        function formatTime(seconds) {
-            const secs = Math.floor(seconds) || 0;
-            const minutes = Math.floor(secs / 60);
-            const remainingSeconds = secs % 60;
-            return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
-        }
+                <p class="text-lg leading-relaxed">
+                    You were standing by the window, bathed in the soft glow of a streetlamp. You laughed, a sound that cut through the noise and went straight to my heart. I knew, right then and there, that this was a beginning.
+                </p>
+                
+                <p class="text-lg leading-relaxed">
+                    We talked for hours, about everything and nothing. The world outside faded away, leaving just the two of us in our own little universe. It wasn't just a meeting; it was a collision of worlds, a beautiful, chaotic alignment of stars.
+                </p>
 
-        function setProgress(e) {
-            if (hasLoadedMeta && song.duration) {
-                const width = this.clientWidth;
-                const clickX = e.offsetX;
-                song.currentTime = (clickX / width) * song.duration;
-            }
-        }
-        
-        function setInitialDuration() {
-             hasLoadedMeta = true;
-             durationEl.textContent = formatTime(song.duration);
-        }
-        
-        function rewindSong() {
-            if (hasLoadedMeta) {
-                song.currentTime = Math.max(0, song.currentTime - 10);
-            }
-        }
-        
-        function forwardSong() {
-            if (hasLoadedMeta && song.duration) {
-                song.currentTime = Math.min(song.duration, song.currentTime + 10);
-            }
+                 <p class="text-lg leading-relaxed">
+                    That night wasn't just the night we met. It was the night my world changed forever.
+                </p>
+            </div>
+        </div>
+
+        <!-- Back Button -->
+        <button onclick="showHomePage()" class="absolute top-4 left-4 z-20 bg-black bg-opacity-50 text-white p-3 rounded-full hover:bg-opacity-75 transition">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+        </button>
+    </div>
+
+    <script>
+        // --- DOM Elements ---
+        const homePage = document.getElementById('home-page');
+        const storyPage = document.getElementById('story-page');
+        const video = document.getElementById('bg-video');
+        const startOverlay = document.getElementById('start-overlay');
+        const storyContent = document.getElementById('story-content');
+
+        // --- Page Navigation ---
+        function showStoryPage() {
+            homePage.classList.add('hidden');
+            storyPage.classList.remove('hidden');
+            storyPage.classList.add('fade-in');
+            // Start playing the video muted in the background
+            video.play().catch(error => console.log("Video autoplay was prevented:", error));
         }
 
-        // --- Event Listeners ---
-        playPauseBtn.addEventListener('click', handlePlayPause);
-        
-        song.addEventListener('pause', () => {
-             playPauseIcon.classList.remove('fa-pause');
-             playPauseIcon.classList.add('fa-play');
-        });
-        
-        song.addEventListener('playing', () => {
-            loadingIndicator.style.display = 'none';
-            playPauseIcon.classList.remove('fa-play');
-            playPauseIcon.classList.add('fa-pause');
-        });
+        function showHomePage() {
+            storyPage.classList.add('hidden');
+            homePage.classList.remove('hidden');
+            homePage.classList.add('fade-in');
+            
+            // Pause and reset video when returning home
+            video.pause();
+            video.currentTime = 0;
+            video.muted = true;
+            
+            // Reset the story page state
+            startOverlay.style.display = 'flex';
+            storyContent.style.opacity = '0';
+        }
 
-        song.addEventListener('loadedmetadata', setInitialDuration);
-        
-        song.addEventListener('timeupdate', updateProgress);
-        progressContainer.addEventListener('click', setProgress);
-        song.addEventListener('ended', () => {
-            song.currentTime = 0;
-            if(currentLyricIndex !== -1) {
-                lyricElements[currentLyricIndex].classList.remove('active');
-                currentLyricIndex = -1;
-            }
-        });
-        prevBtn.addEventListener('click', rewindSong);
-        nextBtn.addEventListener('click', forwardSong);
+        // --- Story Interaction ---
+        function startStory() {
+            // Unmute and ensure video is playing
+            video.muted = false;
+            video.play().catch(error => console.log("Video play with sound was prevented:", error));
 
-        song.addEventListener('error', (e) => {
-            const error = e.target.error;
-            console.error("Audio Element Error:", error);
-            loadingIndicator.style.display = 'block';
-            let errorMessage = "Failed to load audio.";
-            if (error) {
-                switch (error.code) {
-                    case error.MEDIA_ERR_ABORTED:
-                        errorMessage = "The audio playback was aborted.";
-                        break;
-                    case error.MEDIA_ERR_NETWORK:
-                        errorMessage = "A network error caused the audio to fail.";
-                        break;
-                    case error.MEDIA_ERR_DECODE:
-                        errorMessage = "The audio could not be decoded.";
-                        break;
-                    case error.MEDIA_ERR_SRC_NOT_SUPPORTED:
-                        errorMessage = "The audio format is not supported by your browser.";
-                        break;
-                    default:
-                        errorMessage = "An unknown error occurred while loading the audio.";
-                        break;
-                }
-            }
-            loadingIndicator.textContent = errorMessage;
-        });
-
+            // Hide the overlay and fade in the story text
+            startOverlay.style.display = 'none';
+            storyContent.style.opacity = '1';
+        }
     </script>
+
 </body>
 </html>
