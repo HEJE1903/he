@@ -107,7 +107,6 @@
 
         #memory-orb-wrapper {
             position: absolute;
-            /* MODIFIED: Changed top position */
             top: 10%;
             left: 50%;
             transform: translateX(-50%);
@@ -126,6 +125,7 @@
         }
 
         .topic-button {
+            position: absolute;
             opacity: 0;
             transform: translateY(20px);
             transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.6s;
@@ -134,14 +134,23 @@
         
         #home-page.topics-revealed .topic-button {
             opacity: 1;
-            transform: translateY(0);
             pointer-events: auto;
         }
-        
-        #home-page.topics-revealed #topic-button-1 { transition-delay: 0s; }
-        #home-page.topics-revealed #topic-button-2 { transition-delay: 0.1s; }
-        #home-page.topics-revealed #topic-button-3 { transition-delay: 0.2s; }
 
+        /* MODIFIED: New mobile-first fan layout */
+        #home-page.topics-revealed #topic-button-1 {
+            transform: translateY(-140px) translateX(-50%) rotate(-10deg);
+            transition-delay: 0s;
+        }
+        #home-page.topics-revealed #topic-button-2 {
+            transform: translateY(-160px) translateX(-50%);
+            transition-delay: 0.1s;
+        }
+        #home-page.topics-revealed #topic-button-3 {
+            transform: translateY(-140px) translateX(-50%) rotate(10deg);
+            transition-delay: 0.2s;
+        }
+        
         #topic-buttons-wrapper {
             opacity: 0;
             transition: opacity 0.5s;
@@ -151,10 +160,28 @@
         }
 
         #home-page.topics-revealed #memory-orb-wrapper {
-            transform: translateX(-50%) translateY(250px);
+            transform: translateX(-50%) translateY(320px);
         }
         #home-page.topics-revealed #memory-orb {
             transform: scale(0.8);
+        }
+
+        @media (min-width: 768px) {
+            #home-page.topics-revealed #topic-button-1 {
+                transform: translateX(-50%) translateY(-150px) scale(1.1);
+                transition-delay: 0.1s;
+            }
+            #home-page.topics-revealed #topic-button-2 {
+                transform: translateX(-150%) translateY(-80px) rotate(-15deg);
+                transition-delay: 0s;
+            }
+            #home-page.topics-revealed #topic-button-3 {
+                transform: translateX(50%) translateY(-80px) rotate(15deg);
+                transition-delay: 0s;
+            }
+            #home-page.topics-revealed #memory-orb-wrapper {
+                transform: translateX(-50%) translateY(250px);
+            }
         }
 
         #home-page.topics-revealed #main-header, #home-page.topics-revealed #main-subtitle {
@@ -191,7 +218,7 @@
             </div>
             <div class="flex-grow relative w-full">
                 <div id="menu-container" class="absolute inset-0 flex flex-col items-center pt-12">
-                     <div id="topic-buttons-wrapper" class="flex flex-wrap justify-center gap-4 px-4">
+                     <div id="topic-buttons-wrapper" class="relative w-full h-full">
                         <button id="topic-button-1" data-page="story-page-1" class="topic-button w-48 flex items-center justify-center gap-2 bg-white/40 border border-white/50 backdrop-blur-lg text-amber-900 font-bold py-3 px-6 rounded-lg shadow-lg">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
                             <span>The Night We Met</span>
