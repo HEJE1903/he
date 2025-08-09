@@ -180,7 +180,7 @@
                     el: spark,
                     angle: Math.random() * Math.PI * 2,
                     speed: Math.random() * 0.02 + 0.01,
-                    radius: direction === 'opening' ? (origin.width / 2) : (Math.max(window.innerWidth, window.innerHeight) * 1.5),
+                    radius: direction === 'opening' ? 0 : (Math.max(window.innerWidth, window.innerHeight) * 1.5),
                     life: 1,
                     size: Math.random() * 3 + 1,
                 });
@@ -198,11 +198,12 @@
                     s.angle += s.speed;
                     
                     if (direction === 'opening') {
-                        s.radius += (s.speed * 150); // Sparks fly outwards
+                        const expansionFactor = Math.pow(progress, 2);
+                        s.radius = expansionFactor * (origin.width / 1.5 + s.speed * 8000);
                         s.life = 1 - progress;
-                    } else { // closing
-                        const targetRadius = (origin.width / 2);
-                        s.radius -= (s.radius - targetRadius) * 0.1; // Sparks fly inwards
+                    } else { 
+                        const targetRadius = 0;
+                        s.radius -= (s.radius - targetRadius) * 0.05;
                         s.life = progress;
                     }
 
