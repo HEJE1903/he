@@ -107,7 +107,7 @@
 
         #memory-orb {
             background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.8), rgba(255,255,255,0.2));
-            transition: transform 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55), box-shadow 0.4s;
+            transition: transform 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55), box-shadow 0.4s, opacity 0.5s;
             animation: pulse 3s infinite ease-in-out, float 4s infinite ease-in-out;
         }
         
@@ -130,18 +130,25 @@
             pointer-events: auto;
         }
         
+        /* MODIFIED: Added transition for the orb when topics are revealed */
+        #home-page.topics-revealed #memory-orb {
+            transform: scale(0.8);
+            opacity: 0.7;
+        }
+
+        /* MODIFIED: Pushed buttons higher on mobile to avoid overlap */
         #home-page.topics-revealed #topic-button-1 {
-            transform: translateX(-50%) translateY(-240px);
+            transform: translateX(-50%) translateY(-280px);
             opacity: 1;
             transition-delay: 0.2s;
         }
         #home-page.topics-revealed #topic-button-2 {
-            transform: translateX(-50%) translateY(-160px);
+            transform: translateX(-50%) translateY(-200px);
             opacity: 1;
             transition-delay: 0.1s;
         }
         #home-page.topics-revealed #topic-button-3 {
-            transform: translateX(-50%) translateY(-80px);
+            transform: translateX(-50%) translateY(-120px);
             opacity: 1;
         }
 
@@ -157,6 +164,11 @@
             #home-page.topics-revealed #topic-button-3 {
                 transform: translateX(50%) translateY(-80px) rotate(15deg);
                 transition-delay: 0s;
+            }
+            /* On desktop, the orb can disappear completely */
+            #home-page.topics-revealed #memory-orb {
+                transform: scale(0);
+                opacity: 0;
             }
         }
 
@@ -189,12 +201,10 @@
         </video>
         <div id="home-content" class="z-20 w-full h-full flex flex-col items-center">
             <div class="text-center pt-24">
-                <!-- MODIFIED: Removed shadow, changed color -->
                 <h1 id="main-header" class="font-serif text-7xl font-bold text-amber-900 tracking-wider opacity-0 transition-opacity duration-1000">HEJE</h1>
                 <p id="main-subtitle" class="text-amber-900 text-lg italic opacity-0 transition-opacity duration-1000">As always, and always will.</p>
             </div>
             <div class="flex-grow relative w-full">
-                <!-- MODIFIED: Centered the menu container -->
                 <div id="menu-container" class="absolute inset-0 flex items-center justify-center">
                     <button id="memory-orb" class="w-20 h-20 rounded-full backdrop-blur-md shadow-lg border border-white/30"></button>
                     <button id="topic-button-1" data-page="story-page-1" class="topic-button w-48 flex items-center justify-center gap-2 bg-white/40 border border-white/50 backdrop-blur-lg text-amber-900 font-bold py-3 px-6 rounded-lg shadow-lg">
@@ -228,7 +238,7 @@
             </div>
         </div>
         <button class="back-button absolute top-4 left-4 z-20 bg-black bg-opacity-50 text-white p-3 rounded-full hover:bg-opacity-75 transition">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
         </button>
     </div>
     <div id="story-page-2" class="page-container story-page hidden opacity-0" style="transition: opacity 2s ease-in;">
@@ -244,7 +254,7 @@
             </div>
         </div>
         <button class="back-button absolute top-4 left-4 z-20 bg-black bg-opacity-50 text-white p-3 rounded-full hover:bg-opacity-75 transition">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
         </button>
     </div>
     <div id="story-page-3" class="page-container story-page hidden opacity-0" style="transition: opacity 2s ease-in;">
@@ -260,7 +270,7 @@
             </div>
         </div>
         <button class="back-button absolute top-4 left-4 z-20 bg-black bg-opacity-50 text-white p-3 rounded-full hover:bg-opacity-75 transition">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
         </button>
     </div>
 
