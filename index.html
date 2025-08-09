@@ -63,20 +63,31 @@
         .animate-button-2 { animation: slideUp 1s ease-out 1.2s backwards; }
         .animate-button-3 { animation: slideUp 1s ease-out 1.4s backwards; }
         
-        /* --- Flower Particle Container --- */
-        #particle-container {
+        /* --- Transition Containers --- */
+        #portal-container, #particle-container {
             position: absolute;
             inset: 0;
             pointer-events: none;
             z-index: 100;
         }
+        #portal-container { z-index: 99; }
 
         .flower-petal {
             position: absolute;
             will-change: transform, opacity;
-            /* Using SVG for the shape */
             transition: transform 4s cubic-bezier(0.2, 0.7, 0.4, 1), opacity 4s ease-out;
         }
+
+        /* --- Dr. Strange Portal Spark --- */
+        .spark {
+            position: absolute;
+            background: #ffc40c;
+            border-radius: 50%;
+            will-change: transform, opacity;
+            box-shadow: 0 0 5px #ffc40c, 0 0 10px #ff8c00, 0 0 15px #ff4500;
+            opacity: 0;
+        }
+
     </style>
 </head>
 <body class="text-white h-screen">
@@ -121,7 +132,7 @@
         </button>
     </div>
 
-    <!-- Particle container for transitions -->
+    <div id="portal-container"></div>
     <div id="particle-container"></div>
 
     <script>
@@ -129,13 +140,14 @@
         const storyPage = document.getElementById('story-page');
         const video = document.getElementById('bg-video');
         const particleContainer = document.getElementById('particle-container');
+        const portalContainer = document.getElementById('portal-container');
         const PETAL_COUNT = 50;
-        const animationDuration = 4000; // Slower animation
+        const PORTAL_SPARK_COUNT = 150;
+        const animationDuration = 4000;
 
-        // --- FIX: Variable to store the button's position ---
         let lastClickedButtonRect = null;
+        let portalAnimationId = null;
 
-        // SVG for a Daisy flower with a yellow center
         const petalSVG = `<svg viewBox="0 0 50 50" style="overflow: visible;">
             <g fill="currentColor">
                 <path d="M25 18 A 12 12 0 0 1 25 42 A 12 12 0 0 1 25 18 Z" transform="rotate(0 25 25) scale(0.5 1.2) translate(0 -10)"/>
@@ -149,14 +161,71 @@
             </g>
             <circle cx="25" cy="25" r="7" fill="#FFD700"/>
         </svg>`;
-        const petalColors = ['#FFFFFF', '#F5F5F5', '#FAFAFA']; // Shades of white for daisy petals
+        const petalColors = ['#FFFFFF', '#F5F5F5', '#FAFAFA'];
 
         function triggerHapticFeedback() {
             if (navigator.vibrate) navigator.vibrate(50);
         }
 
+        function animatePortal(origin, direction) {
+            if (portalAnimationId) cancelAnimationFrame(portalAnimationId);
+            portalContainer.innerHTML = '';
+            
+            const sparks = [];
+            for (let i = 0; i < PORTAL_SPARK_COUNT; i++) {
+                const spark = document.createElement('div');
+                spark.classList.add('spark');
+                portalContainer.appendChild(spark);
+                sparks.push({
+                    el: spark,
+                    angle: Math.random() * Math.PI * 2,
+                    speed: Math.random() * 0.02 + 0.01,
+                    radius: direction === 'opening' ? (origin.width / 2) : (Math.max(window.innerWidth, window.innerHeight) * 1.5),
+                    life: 1,
+                    size: Math.random() * 3 + 1,
+                });
+            }
+
+            let startTime = null;
+            const duration = 2500;
+
+            function frame(currentTime) {
+                if (!startTime) startTime = currentTime;
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+
+                sparks.forEach(s => {
+                    s.angle += s.speed;
+                    
+                    if (direction === 'opening') {
+                        s.radius += (s.speed * 150); // Sparks fly outwards
+                        s.life = 1 - progress;
+                    } else { // closing
+                        const targetRadius = (origin.width / 2);
+                        s.radius -= (s.radius - targetRadius) * 0.1; // Sparks fly inwards
+                        s.life = progress;
+                    }
+
+                    const x = origin.left + origin.width / 2 + Math.cos(s.angle) * s.radius;
+                    const y = origin.top + origin.height / 2 + Math.sin(s.angle) * s.radius;
+
+                    s.el.style.width = `${s.size}px`;
+                    s.el.style.height = `${s.size}px`;
+                    s.el.style.transform = `translate(${x}px, ${y}px)`;
+                    s.el.style.opacity = s.life;
+                });
+
+                if (progress < 1) {
+                    portalAnimationId = requestAnimationFrame(frame);
+                } else {
+                    portalContainer.innerHTML = '';
+                }
+            }
+            portalAnimationId = requestAnimationFrame(frame);
+        }
+
         function createPetals(originRect, direction = 'out') {
-            particleContainer.innerHTML = ''; // Clear old petals
+            particleContainer.innerHTML = '';
             for (let i = 0; i < PETAL_COUNT; i++) {
                 const p = document.createElement('div');
                 p.classList.add('flower-petal');
@@ -165,7 +234,6 @@
                 p.style.width = `${size}px`;
                 p.style.height = `${size}px`;
                 p.style.color = petalColors[Math.floor(Math.random() * petalColors.length)];
-                
                 p.style.transition = `transform ${animationDuration / 1000}s cubic-bezier(0.2, 0.7, 0.4, 1), opacity ${animationDuration / 1000}s ease-out`;
 
                 if (direction === 'out') {
@@ -213,13 +281,16 @@
 
         function showStoryPage(buttonElement) {
             triggerHapticFeedback();
-            // --- FIX: Store the button's position before animating ---
             lastClickedButtonRect = buttonElement.getBoundingClientRect();
 
-            createPetals(lastClickedButtonRect, 'out');
-            animatePetals(lastClickedButtonRect, 'out');
+            animatePortal(lastClickedButtonRect, 'opening');
+            
+            setTimeout(() => {
+                createPetals(lastClickedButtonRect, 'out');
+                animatePetals(lastClickedButtonRect, 'out');
+            }, 200);
 
-            homePage.style.transition = 'opacity 1.2s ease-out';
+            homePage.style.transition = 'opacity 1.5s ease-out 0.5s';
             homePage.style.opacity = '0';
             
             storyPage.classList.remove('hidden');
@@ -234,7 +305,7 @@
                         video.play();
                     });
                 }
-            }, 1000);
+            }, 1200);
 
             setTimeout(() => {
                 homePage.classList.add('hidden');
@@ -244,9 +315,9 @@
 
         function showHomePage() {
             triggerHapticFeedback();
-            // --- FIX: Use the stored button position for the return animation ---
             const rect = lastClickedButtonRect || { top: window.innerHeight / 2, left: window.innerWidth / 2, width: 0, height: 0 };
             
+            animatePortal(rect, 'closing');
             createPetals(rect, 'in');
             animatePetals(rect, 'in');
 
