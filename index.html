@@ -44,6 +44,31 @@
         .player-controls button:hover:not(:disabled) {
             transform: scale(1.1);
         }
+        /* Lyrics styles */
+        #lyrics-container {
+            height: 110px; /* Adjust height as needed */
+            overflow-y: auto;
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+            scroll-behavior: smooth;
+            text-align: center;
+        }
+        #lyrics-container::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, and Opera */
+        }
+        .lyric-line {
+            transition: opacity 0.5s ease, transform 0.5s ease;
+            opacity: 0.5;
+            font-size: 1.125rem; /* text-lg */
+            line-height: 1.75rem;
+            padding: 4px 0;
+        }
+        .lyric-line.active {
+            opacity: 1;
+            transform: scale(1.05);
+            color: #ffffff;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body class="bg-black">
@@ -59,19 +84,23 @@
         
         <div class="w-full max-w-sm text-center">
             <!-- Album Art / Photo -->
-            <div class="mb-8 shadow-2xl rounded-lg overflow-hidden">
+            <div class="mb-6 shadow-2xl rounded-lg overflow-hidden">
                 <img src="https://images.unsplash.com/photo-1639056610940-d7e9b0af3a99?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="The Night We Met" class="w-full h-auto">
             </div>
 
             <!-- Song Info -->
             <h1 class="text-3xl font-bold playfair-display">The Night We Met</h1>
             <p class="text-lg text-gray-300 mt-1">Lord Huron</p>
-            <p class="text-sm text-gray-400">(Slowed + Reverb)</p>
+            <p class="text-sm text-gray-400 mb-6">(Slowed + Reverb)</p>
+
+            <!-- Lyrics Container -->
+            <div id="lyrics-container" class="mb-6">
+                <!-- Lyrics will be dynamically inserted here -->
+            </div>
             
             <!-- Audio Player -->
             <div class="mt-8">
-                <!-- Set preload to "metadata" to fetch duration early -->
-                <audio id="song" src="https://res.cloudinary.com/dzklkjmiq/video/upload/v1754551138/The_Night_We_met_Slowed_and_Reverb_Tiktok_Version_qpc0c4.mp3" preload="metadata" crossorigin="anonymous"></audio>
+                <audio id="song" src="https://res.cloudinary.com/dzklkjmiq/video/upload/v1754552079/The_Night_We_met_Slowed_and_Reverb_Tiktok_Version-_AudioTrimmer.com_2_p5whpv.mp3" preload="metadata" crossorigin="anonymous"></audio>
 
                 <!-- Loading/Error Indicator -->
                 <div id="loading" class="text-white mb-4" style="display: none;">Loading...</div>
@@ -114,43 +143,115 @@
         const currentTimeEl = document.getElementById('current-time');
         const durationEl = document.getElementById('duration');
         const loadingIndicator = document.getElementById('loading');
+        const lyricsContainer = document.getElementById('lyrics-container');
         
+        // --- Lyrics Data ---
+        const lyricsData = [
+            { time: 24, text: "I am not the only traveler" },
+            { time: 29, text: "Who has not repaid his debt" },
+            { time: 35, text: "I've been searching for a trail to follow again" },
+            { time: 41, text: "Take me back to the night we met" },
+            { time: 46, text: "And then I can tell myself" },
+            { time: 50, text: "What the hell I'm supposed to do" },
+            { time: 56, text: "And then I can tell myself" },
+            { time: 61, text: "Not to ride along with you" },
+            { time: 67, text: "I had all and then most of you" },
+            { time: 72, text: "Some and now none of you" },
+            { time: 78, text: "Take me back to the night we met" },
+            { time: 83, text: "I don't know what I'm supposed to do" },
+            { time: 88, text: "Haunted by the ghost of you" },
+            { time: 94, text: "Oh, take me back to the night we met" },
+            { time: 121, text: "When the night was full of terrors" },
+            { time: 126, text: "And your eyes were filled with tears" },
+            { time: 132, text: "When you had not touched me yet" },
+            { time: 137, text: "Oh, take me back to the night we met" },
+            { time: 143, text: "I had all and then most of you" },
+            { time: 148, text: "Some and now none of you" },
+            { time: 154, text: "Take me back to the night we met" },
+            { time: 159, text: "I don't know what I'm supposed to do" },
+            { time: 164, text: "Haunted by the ghost of you" },
+            { time: 170, text: "Take me back to the night we met" }
+        ];
+
+        let currentLyricIndex = -1;
         let hasLoadedMeta = false;
+        let isAudioInitialized = false;
+        
+        // Populate lyrics container
+        lyricsContainer.innerHTML = lyricsData.map((line, index) => 
+            `<p class="lyric-line" data-index="${index}">${line.text}</p>`
+        ).join('');
+        const lyricElements = document.querySelectorAll('.lyric-line');
 
-        // Function to play or pause the song
-        function togglePlayPause() {
-            if (song.paused) {
-                // The play() method returns a promise.
-                const playPromise = song.play();
-
-                if (playPromise !== undefined) {
-                    playPromise.catch(error => {
-                        // Autoplay was prevented or another error occurred.
-                        console.error("Playback error:", error);
-                        // We display a generic error because the browser might not provide a specific one.
-                        loadingIndicator.textContent = "Could not play audio.";
-                        loadingIndicator.style.display = 'block';
-                        // Ensure the UI is in a paused state if play fails.
-                        playPauseIcon.classList.remove('fa-pause');
-                        playPauseIcon.classList.add('fa-play');
-                    });
-                }
-            } else {
-                song.pause();
+        function playSong() {
+            const playPromise = song.play();
+            if (playPromise !== undefined) {
+                playPromise.catch(error => {
+                    console.error("Playback error:", error);
+                    loadingIndicator.textContent = "Could not play audio.";
+                    loadingIndicator.style.display = 'block';
+                });
             }
         }
 
-        // Update progress bar and time
+        function pauseSong() {
+            song.pause();
+        }
+
+        function handlePlayPause() {
+            if (!isAudioInitialized) {
+                try {
+                    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    if (audioContext.state === 'suspended') {
+                        audioContext.resume();
+                    }
+                } catch (e) {
+                    console.error("Web Audio API is not supported or failed to initialize.", e);
+                }
+                isAudioInitialized = true;
+            }
+
+            if (song.paused) {
+                playSong();
+            } else {
+                pauseSong();
+            }
+        }
+
         function updateProgress() {
             if (hasLoadedMeta && song.duration) {
                 const { duration, currentTime } = song;
                 const progressPercent = (currentTime / duration) * 100;
                 progressBar.style.width = `${progressPercent}%`;
                 currentTimeEl.textContent = formatTime(currentTime);
+                
+                // --- Sync Lyrics ---
+                syncLyrics(currentTime);
             }
         }
         
-        // Format time to minutes:seconds
+        function syncLyrics(currentTime) {
+            let newLyricIndex = -1;
+            for (let i = 0; i < lyricsData.length; i++) {
+                if (currentTime >= lyricsData[i].time) {
+                    newLyricIndex = i;
+                }
+            }
+
+            if (newLyricIndex !== currentLyricIndex) {
+                if (currentLyricIndex !== -1) {
+                    lyricElements[currentLyricIndex].classList.remove('active');
+                }
+                if (newLyricIndex !== -1) {
+                    const activeLyric = lyricElements[newLyricIndex];
+                    activeLyric.classList.add('active');
+                    // Scroll the active lyric into view
+                    activeLyric.scrollIntoView({ block: 'center', inline: 'nearest' });
+                }
+                currentLyricIndex = newLyricIndex;
+            }
+        }
+
         function formatTime(seconds) {
             const secs = Math.floor(seconds) || 0;
             const minutes = Math.floor(secs / 60);
@@ -158,9 +259,7 @@
             return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
         }
 
-        // Set progress bar on click
         function setProgress(e) {
-            // Only allow seeking if metadata has loaded.
             if (hasLoadedMeta && song.duration) {
                 const width = this.clientWidth;
                 const clickX = e.offsetX;
@@ -168,20 +267,17 @@
             }
         }
         
-        // Set total duration display
         function setInitialDuration() {
              hasLoadedMeta = true;
              durationEl.textContent = formatTime(song.duration);
         }
         
-        // Rewind 10 seconds
         function rewindSong() {
             if (hasLoadedMeta) {
                 song.currentTime = Math.max(0, song.currentTime - 10);
             }
         }
         
-        // Forward 10 seconds
         function forwardSong() {
             if (hasLoadedMeta && song.duration) {
                 song.currentTime = Math.min(song.duration, song.currentTime + 10);
@@ -189,34 +285,33 @@
         }
 
         // --- Event Listeners ---
-        playPauseBtn.addEventListener('click', togglePlayPause);
+        playPauseBtn.addEventListener('click', handlePlayPause);
         
-        // Update icon when song is paused for any reason (e.g., call ended)
         song.addEventListener('pause', () => {
              playPauseIcon.classList.remove('fa-pause');
              playPauseIcon.classList.add('fa-play');
         });
         
-        // This event fires once playback has started.
         song.addEventListener('playing', () => {
             loadingIndicator.style.display = 'none';
             playPauseIcon.classList.remove('fa-play');
             playPauseIcon.classList.add('fa-pause');
         });
 
-        // This event fires when metadata (like duration) is loaded.
         song.addEventListener('loadedmetadata', setInitialDuration);
         
         song.addEventListener('timeupdate', updateProgress);
         progressContainer.addEventListener('click', setProgress);
         song.addEventListener('ended', () => {
-            // The 'pause' event will handle the icon change.
-            song.currentTime = 0; // Reset to beginning
+            song.currentTime = 0;
+            if(currentLyricIndex !== -1) {
+                lyricElements[currentLyricIndex].classList.remove('active');
+                currentLyricIndex = -1;
+            }
         });
         prevBtn.addEventListener('click', rewindSong);
         nextBtn.addEventListener('click', forwardSong);
 
-        // Listen for errors on the audio element for better debugging
         song.addEventListener('error', (e) => {
             const error = e.target.error;
             console.error("Audio Element Error:", error);
