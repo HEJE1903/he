@@ -128,7 +128,8 @@
     <!-- Homepage View -->
     <div id="home-page" class="page-container hidden flex-col items-center justify-center p-8 text-center">
         <video id="home-bg-video" loop muted playsinline>
-            <source src="https://res.cloudinary.com/dzklkjmiq/video/upload/background_izstkz.mp4" type="video/mp4">
+            <!-- CHANGE: Added Cloudinary transformations to optimize the video -->
+            <source src="https://res.cloudinary.com/dzklkjmiq/video/upload/w_1080,q_auto,f_auto/background_izstkz.mp4" type="video/mp4">
         </video>
         <div id="home-content" class="z-10 w-full bg-black bg-opacity-40 py-10 rounded-lg">
             <h1 class="font-serif text-8xl font-bold mb-2 text-white tracking-wider animate-title-glow">HEJE</h1>
