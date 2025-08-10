@@ -107,10 +107,12 @@
 
         #memory-orb-wrapper {
             position: absolute;
-            top: 10%;
+            /* MODIFIED: Changed top position */
+            top: 5%;
             left: 50%;
             transform: translateX(-50%);
             transition: transform 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            z-index: 10;
         }
 
         #memory-orb {
@@ -125,7 +127,6 @@
         }
 
         .topic-button {
-            position: absolute;
             opacity: 0;
             transform: translateY(20px);
             transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.6s;
@@ -134,23 +135,14 @@
         
         #home-page.topics-revealed .topic-button {
             opacity: 1;
+            transform: translateY(0);
             pointer-events: auto;
         }
-
-        /* MODIFIED: New mobile-first fan layout */
-        #home-page.topics-revealed #topic-button-1 {
-            transform: translateY(-140px) translateX(-50%) rotate(-10deg);
-            transition-delay: 0s;
-        }
-        #home-page.topics-revealed #topic-button-2 {
-            transform: translateY(-160px) translateX(-50%);
-            transition-delay: 0.1s;
-        }
-        #home-page.topics-revealed #topic-button-3 {
-            transform: translateY(-140px) translateX(-50%) rotate(10deg);
-            transition-delay: 0.2s;
-        }
         
+        #home-page.topics-revealed #topic-button-1 { transition-delay: 0s; }
+        #home-page.topics-revealed #topic-button-2 { transition-delay: 0.1s; }
+        #home-page.topics-revealed #topic-button-3 { transition-delay: 0.2s; }
+
         #topic-buttons-wrapper {
             opacity: 0;
             transition: opacity 0.5s;
@@ -160,28 +152,10 @@
         }
 
         #home-page.topics-revealed #memory-orb-wrapper {
-            transform: translateX(-50%) translateY(320px);
+            transform: translateX(-50%) translateY(250px);
         }
         #home-page.topics-revealed #memory-orb {
             transform: scale(0.8);
-        }
-
-        @media (min-width: 768px) {
-            #home-page.topics-revealed #topic-button-1 {
-                transform: translateX(-50%) translateY(-150px) scale(1.1);
-                transition-delay: 0.1s;
-            }
-            #home-page.topics-revealed #topic-button-2 {
-                transform: translateX(-150%) translateY(-80px) rotate(-15deg);
-                transition-delay: 0s;
-            }
-            #home-page.topics-revealed #topic-button-3 {
-                transform: translateX(50%) translateY(-80px) rotate(15deg);
-                transition-delay: 0s;
-            }
-            #home-page.topics-revealed #memory-orb-wrapper {
-                transform: translateX(-50%) translateY(250px);
-            }
         }
 
         #home-page.topics-revealed #main-header, #home-page.topics-revealed #main-subtitle {
@@ -201,8 +175,16 @@
         <button id="enter-button" class="hidden mt-8 bg-amber-600 hover:bg-amber-700 text-white font-bold py-4 px-8 rounded-lg shadow-lg transition-all duration-500 opacity-0 scale-90">
             Enter
         </button>
-        <p id="sound-message" class="hidden mt-4 text-gray-500 text-sm transition-opacity duration-500 opacity-0">
-            Sound On. Please turn up your volume.
+        <p id="sound-message" class="hidden mt-4 text-gray-500 text-sm transition-opacity duration-500 opacity-0 flex items-center justify-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M11.536 14.01A8.473 8.473 0 0 0 14.026 8a8.473 8.473 0 0 0-2.49-6.01l-1.06 1.06A6.976 6.976 0 0 1 12.525 8a6.976 6.976 0 0 1-2.048 4.95l1.06 1.06z"/>
+                <path d="M10.121 12.596A6.48 6.48 0 0 0 12.025 8a6.48 6.48 0 0 0-1.904-4.596l-1.06 1.06A4.975 4.975 0 0 1 10.525 8a4.975 4.975 0 0 1-1.464 3.536l1.06 1.06z"/>
+                <path d="M8.707 11.182A4.486 4.486 0 0 0 10.025 8a4.486 4.486 0 0 0-1.318-3.182L8 5.525A3.01 3.01 0 0 1 9.025 8 3.01 3.01 0 0 1 8 10.475l.707.707zM6.717 3.55A.5.5 0 0 1 7 4v8a.5.5 0 0 1-.812.39L3.825 10.5H1.5A.5.5 0 0 1 1 10V6a.5.5 0 0 1 .5-.5h2.325l2.363-1.89a.5.5 0 0 1 .529-.06z"/>
+            </svg>
+            <span>Sound On. Please turn up your volume.</span>
+        </p>
+        <p id="disclaimer" class="hidden absolute bottom-4 left-4 right-4 text-xs text-gray-600 italic transition-opacity duration-500 opacity-0">
+            This page is created by HE for HEJE. Access to this website requires permission from either HE or JE.
         </p>
     </div>
 
@@ -218,7 +200,7 @@
             </div>
             <div class="flex-grow relative w-full">
                 <div id="menu-container" class="absolute inset-0 flex flex-col items-center pt-12">
-                     <div id="topic-buttons-wrapper" class="relative w-full h-full">
+                     <div id="topic-buttons-wrapper" class="flex flex-wrap justify-center gap-4 px-4">
                         <button id="topic-button-1" data-page="story-page-1" class="topic-button w-48 flex items-center justify-center gap-2 bg-white/40 border border-white/50 backdrop-blur-lg text-amber-900 font-bold py-3 px-6 rounded-lg shadow-lg">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
                             <span>The Night We Met</span>
@@ -316,47 +298,68 @@
         const loadingIndicator = document.getElementById('loading-indicator');
         const enterButton = document.getElementById('enter-button');
         const soundMessage = document.getElementById('sound-message');
+        const disclaimer = document.getElementById('disclaimer');
+
         loadingIndicator.style.display = 'none';
         enterButton.classList.remove('hidden');
         soundMessage.classList.remove('hidden');
+        disclaimer.classList.remove('hidden');
         
         setTimeout(() => {
             enterButton.style.opacity = '1';
             enterButton.style.transform = 'scale(1)';
             soundMessage.style.opacity = '1';
+            disclaimer.style.opacity = '1';
         }, 100);
 
         function enterHomepage() {
             triggerHapticFeedback();
-            loadingPage.style.transition = 'opacity 1s ease-out';
-            loadingPage.style.opacity = '0';
+            const buttonRect = enterButton.getBoundingClientRect();
             
-            homePage.classList.remove('hidden');
-            
-            homeBgVideo.muted = false;
-            homeBgVideo.volume = 0;
-            const playPromise = homeBgVideo.play();
+            animatePortal(buttonRect, 'opening');
 
-            if (playPromise !== undefined) {
-                playPromise.then(() => {
-                    let currentVolume = 0;
-                    const fadeAudio = setInterval(() => {
-                        if (currentVolume < 1) {
-                            currentVolume += 0.05;
-                            homeBgVideo.volume = Math.min(currentVolume, 1);
-                        } else {
-                            clearInterval(fadeAudio);
-                        }
-                    }, 75);
-                }).catch(error => {
-                    console.log("Autoplay with sound failed, playing muted as fallback.", error);
-                    homeBgVideo.muted = true;
-                    homeBgVideo.play();
-                });
-            }
+            const elementsToFade = [
+                document.getElementById('loading-indicator'),
+                enterButton,
+                soundMessage,
+                disclaimer
+            ];
+            elementsToFade.forEach(el => {
+                el.style.transition = 'opacity 0.5s ease-out';
+                el.style.opacity = '0';
+            });
 
             setTimeout(() => {
-                loadingPage.style.display = 'none';
+                loadingPage.style.transition = 'opacity 1s ease-out';
+                loadingPage.style.opacity = '0';
+                
+                homePage.classList.remove('hidden');
+                
+                homeBgVideo.muted = false;
+                homeBgVideo.volume = 0;
+                const playPromise = homeBgVideo.play();
+
+                if (playPromise !== undefined) {
+                    playPromise.then(() => {
+                        let currentVolume = 0;
+                        const fadeAudio = setInterval(() => {
+                            if (currentVolume < 1) {
+                                currentVolume += 0.05;
+                                homeBgVideo.volume = Math.min(currentVolume, 1);
+                            } else {
+                                clearInterval(fadeAudio);
+                            }
+                        }, 75);
+                    }).catch(error => {
+                        console.log("Autoplay with sound failed, playing muted as fallback.", error);
+                        homeBgVideo.muted = true;
+                        homeBgVideo.play();
+                    });
+                }
+
+                setTimeout(() => {
+                    loadingPage.style.display = 'none';
+                }, 1000);
             }, 1000);
         }
 
