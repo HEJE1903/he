@@ -154,6 +154,15 @@
             inset: 0;
             z-index: 1;
         }
+
+        #entry-orb {
+            background: radial-gradient(circle at 30% 30%, rgba(255, 235, 59, 0.8), rgba(255, 193, 7, 0.2));
+            animation: pulse 3s infinite ease-in-out;
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        #entry-orb:hover {
+            transform: scale(1.1);
+        }
     </style>
 </head>
 <body class="text-white h-screen">
@@ -166,7 +175,7 @@
             <span>...</span>
         </div>
         <div id="tap-to-enter-container" class="hidden absolute bottom-[30%] left-1/2 -translate-x-1/2 w-full z-20 flex-col items-center gap-4">
-             <button id="entry-orb" class="w-24 h-24 rounded-full shadow-lg border border-yellow-400/50 backdrop-blur-md"></button>
+            <button id="entry-orb" class="w-24 h-24 rounded-full shadow-lg border border-yellow-400/50 backdrop-blur-md"></button>
             <p class="text-lg font-serif text-gray-300 mt-4">Tap to Enter HEJE Universe</p>
             <p id="sound-message" class="text-gray-400 text-sm transition-opacity duration-500 flex items-center justify-center gap-2 z-10 mt-2">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
@@ -192,7 +201,8 @@
                 <h1 id="main-header" class="font-serif text-7xl font-bold text-amber-900 tracking-wider">HEJE</h1>
                 <p id="main-subtitle" class="text-amber-900 text-lg italic">As always, and always will.</p>
             </div>
-            <div class="flex-grow w-full flex items-center justify-center">
+            <!-- MODIFIED: Changed to items-start and added padding -->
+            <div class="flex-grow w-full flex items-start justify-center pt-16">
                 <div id="menu-container" class="flex flex-col items-center">
                      <div id="topic-buttons-wrapper" class="flex flex-wrap justify-center gap-4 px-4">
                         <button id="topic-button-1" data-page="story-page-1" class="topic-button w-48 flex items-center justify-center gap-2 bg-white/40 border border-white/50 backdrop-blur-lg text-amber-900 font-bold py-3 px-6 rounded-lg shadow-lg">
@@ -213,7 +223,7 @@
             </div>
         </div>
     </div>
-
+    
     <!-- Story Pages -->
     <div id="story-page-1" class="page-container story-page hidden opacity-0" style="transition: opacity 2s ease-in;">
         <video id="story-video-1" class="story-video" loop muted playsinline>
