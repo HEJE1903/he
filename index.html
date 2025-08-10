@@ -201,7 +201,6 @@
                 <h1 id="main-header" class="font-serif text-7xl font-bold text-amber-900 tracking-wider">HEJE</h1>
                 <p id="main-subtitle" class="text-amber-900 text-lg italic">As always, and always will.</p>
             </div>
-            <!-- MODIFIED: Changed to items-start and added padding -->
             <div class="flex-grow w-full flex items-start justify-center pt-16">
                 <div id="menu-container" class="flex flex-col items-center">
                      <div id="topic-buttons-wrapper" class="flex flex-wrap justify-center gap-4 px-4">
@@ -590,7 +589,7 @@
 
             setTimeout(() => {
                 homePage.classList.remove('hidden');
-                document.body.classList.remove('topics-revealed'); 
+                document.body.classList.add('topics-revealed'); 
                 homeContent.classList.remove('home-content-fade-out');
                 homeContent.classList.add('home-content-fade-in');
                 homeBgVideo.play();
