@@ -106,16 +106,6 @@
             50% { box-shadow: 0 0 30px 10px rgba(255, 235, 59, 0.5); }
         }
 
-        #memory-orb-wrapper {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            transition: top 1.2s cubic-bezier(0.68, -0.55, 0.27, 1.55), opacity 0.5s;
-            z-index: 210; 
-            opacity: 0;
-        }
-
         #memory-orb {
             background: radial-gradient(circle at 30% 30%, rgba(255, 235, 59, 0.8), rgba(255, 193, 7, 0.2));
             animation: pulse 3s infinite ease-in-out, float 4s infinite ease-in-out;
@@ -128,67 +118,35 @@
         }
 
         .topic-button {
-            position: absolute;
-            left: 50%;
             opacity: 0;
-            transform: translateX(-50%) translateY(20px);
-            transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.6s;
+            transform: scale(0.9);
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.5s;
             pointer-events: none;
         }
         
         body.topics-revealed .topic-button {
             opacity: 1;
+            transform: scale(1);
             pointer-events: auto;
         }
-
-        body.topics-revealed #topic-button-1 {
-            transform: translateX(-50%) translateY(-240px);
-            transition-delay: 0.2s;
-        }
-        body.topics-revealed #topic-button-2 {
-            transform: translateX(-50%) translateY(-160px);
-            transition-delay: 0.1s;
-        }
-        body.topics-revealed #topic-button-3 {
-            transform: translateX(-50%) translateY(-80px);
-            transition-delay: 0s;
-        }
         
+        body.topics-revealed #topic-button-1 { transition-delay: 0s; }
+        body.topics-revealed #topic-button-2 { transition-delay: 0.1s; }
+        body.topics-revealed #topic-button-3 { transition-delay: 0.2s; }
+
         #topic-buttons-wrapper {
-            opacity: 0;
-            transition: opacity 0.5s;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275), margin-bottom 0.7s, margin-top 0.7s;
         }
         body.topics-revealed #topic-buttons-wrapper {
-            opacity: 1;
+            max-height: 300px; 
+            margin-top: 2rem;
+            margin-bottom: 2rem;
         }
 
-        body.entered #memory-orb-wrapper {
-            top: 40%;
-        }
-
-        body.topics-revealed #memory-orb-wrapper {
-            top: 85%;
-        }
         body.topics-revealed #memory-orb {
             transform: scale(0.8);
-        }
-
-        @media (min-width: 768px) {
-            body.topics-revealed #topic-button-1 {
-                transform: translateX(-150%) translateY(-80px) rotate(-15deg);
-                transition-delay: 0s;
-            }
-            body.topics-revealed #topic-button-2 {
-                transform: translateX(-50%) translateY(-150px) scale(1.1);
-                transition-delay: 0.1s;
-            }
-            body.topics-revealed #topic-button-3 {
-                transform: translateX(50%) translateY(-80px) rotate(15deg);
-                transition-delay: 0s;
-            }
-            body.topics-revealed #memory-orb-wrapper {
-                top: 80%;
-            }
         }
         
         #starry-bg-canvas {
@@ -208,7 +166,8 @@
             <span>...</span>
         </div>
         <div id="tap-to-enter-container" class="hidden absolute bottom-[30%] left-1/2 -translate-x-1/2 w-full z-20 flex-col items-center gap-4">
-            <p class="text-lg font-serif text-gray-300">Tap to Enter HEJE Universe</p>
+             <button id="entry-orb" class="w-24 h-24 rounded-full shadow-lg border border-yellow-400/50 backdrop-blur-md"></button>
+            <p class="text-lg font-serif text-gray-300 mt-4">Tap to Enter HEJE Universe</p>
             <p id="sound-message" class="text-gray-400 text-sm transition-opacity duration-500 flex items-center justify-center gap-2 z-10 mt-2">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                     <path d="M11.536 14.01A8.473 8.473 0 0 0 14.026 8a8.473 8.473 0 0 0-2.49-6.01l-1.06 1.06A6.976 6.976 0 0 1 12.525 8a6.976 6.976 0 0 1-2.048 4.95l1.06 1.06z"/>
@@ -233,9 +192,9 @@
                 <h1 id="main-header" class="font-serif text-7xl font-bold text-amber-900 tracking-wider">HEJE</h1>
                 <p id="main-subtitle" class="text-amber-900 text-lg italic">As always, and always will.</p>
             </div>
-            <div class="flex-grow relative w-full">
-                <div id="menu-container" class="absolute inset-0 flex flex-col items-center pt-24">
-                     <div id="topic-buttons-wrapper" class="relative w-full h-full">
+            <div class="flex-grow w-full flex items-center justify-center">
+                <div id="menu-container" class="flex flex-col items-center">
+                     <div id="topic-buttons-wrapper" class="flex flex-wrap justify-center gap-4 px-4">
                         <button id="topic-button-1" data-page="story-page-1" class="topic-button w-48 flex items-center justify-center gap-2 bg-white/40 border border-white/50 backdrop-blur-lg text-amber-900 font-bold py-3 px-6 rounded-lg shadow-lg">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
                             <span>The Night We Met</span>
@@ -249,13 +208,10 @@
                             <span>Our Little Infinity</span>
                         </button>
                     </div>
+                    <button id="memory-orb" class="w-20 h-20 rounded-full shadow-lg border border-yellow-400/50 backdrop-blur-md"></button>
                 </div>
             </div>
         </div>
-    </div>
-    
-    <div id="memory-orb-wrapper">
-        <button id="memory-orb" class="w-20 h-20 rounded-full shadow-lg border border-yellow-400/50 backdrop-blur-md"></button>
     </div>
 
     <!-- Story Pages -->
@@ -319,8 +275,8 @@
         const particleContainer = document.getElementById('particle-container');
         const portalContainer = document.getElementById('portal-container');
         const homeBgVideo = document.getElementById('home-bg-video');
-        const memoryOrbWrapper = document.getElementById('memory-orb-wrapper');
         const memoryOrb = document.getElementById('memory-orb');
+        const entryOrb = document.getElementById('entry-orb');
 
         const PETAL_COUNT = 50;
         const PORTAL_SPARK_COUNT = 150;
@@ -374,27 +330,21 @@
             tapContainer.classList.add('flex');
             soundMessage.classList.remove('hidden');
             disclaimer.classList.remove('hidden');
-            memoryOrbWrapper.style.opacity = '1';
             setTimeout(() => {
                 soundMessage.style.opacity = '1';
                 disclaimer.style.opacity = '1';
             }, 50);
         }, 1500);
         
-        memoryOrb.addEventListener('click', () => {
-            if (!hasEntered) {
-                enterHomepage();
-            } else {
-                revealTopics();
-            }
-        });
+        entryOrb.addEventListener('click', enterHomepage);
+        memoryOrb.addEventListener('click', revealTopics);
 
         function enterHomepage() {
             if (hasEntered) return;
             hasEntered = true;
             triggerHapticFeedback();
             
-            const orbRect = memoryOrb.getBoundingClientRect();
+            const orbRect = entryOrb.getBoundingClientRect();
             animatePortal(orbRect, 'opening');
 
             const elementsToFade = [tapContainer, disclaimer, soundMessage];
