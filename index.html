@@ -86,20 +86,11 @@
             z-index: 200;
         }
         
-        /* MODIFIED: Styles for the new "Connect the Stars" canvas */
-        #connect-stars-canvas {
-            position: absolute;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 10;
-            cursor: pointer;
+        #loading-indicator span {
+            animation: fadeIn 2s ease-in-out infinite alternate;
         }
-
-        #entry-text {
-            z-index: 20;
-            transition: opacity 0.5s ease-out;
-        }
+        #loading-indicator span:nth-child(2) { animation-delay: 0.3s; }
+        #loading-indicator span:nth-child(3) { animation-delay: 0.6s; }
 
         @keyframes float {
             0%, 100% {
@@ -198,17 +189,34 @@
         #home-page.topics-revealed #main-header, #home-page.topics-revealed #main-subtitle {
              opacity: 1;
         }
+
+        /* MODIFIED: Styles for the new "Hold to Enter" orb */
+        #entry-orb {
+            background: radial-gradient(circle at 30% 30%, rgba(255, 235, 59, 0.8), rgba(255, 193, 7, 0.2));
+            animation: pulse 3s infinite ease-in-out;
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.5s;
+        }
+        #entry-orb.holding {
+            transform: scale(1.2);
+            box-shadow: 0 0 50px 20px rgba(255, 215, 0, 0.5);
+        }
+
     </style>
 </head>
 <body class="text-white h-screen">
 
-    <!-- MODIFIED: Loading Screen now has a canvas for the "Connect the Stars" effect -->
+    <!-- MODIFIED: Loading Screen now has a "Hold to Enter" interaction -->
     <div id="loading-page" class="page-container flex flex-col items-center justify-center p-8 text-center">
-        <canvas id="connect-stars-canvas"></canvas>
-        <div id="entry-text" class="relative z-20">
-            <h2 class="text-2xl font-serif text-gray-300">Connect our stars to begin</h2>
+        <div id="loading-indicator" class="text-2xl font-serif text-gray-400">
+            <span>Loading</span>
+            <span>Universe</span>
+            <span>...</span>
         </div>
-        <p id="disclaimer" class="absolute bottom-4 left-4 right-4 text-xs text-gray-600 italic z-20">
+        <div id="hold-to-enter-container" class="hidden flex-col items-center gap-4">
+            <button id="entry-orb" class="w-24 h-24 rounded-full shadow-lg border border-yellow-400/50 backdrop-blur-md"></button>
+            <p class="text-lg font-serif text-gray-300">Hold to Enter Our Universe</p>
+        </div>
+        <p id="disclaimer" class="hidden absolute bottom-4 left-4 right-4 text-xs text-gray-600 italic">
             This page is created by HE for HEJE. Access to this website requires permission from either HE or JE.
         </p>
     </div>
@@ -320,118 +328,52 @@
         const petalSVG = `<svg viewBox="0 0 50 50" style="overflow: visible;"><g fill="currentColor"><path d="M25 18 A 12 12 0 0 1 25 42 A 12 12 0 0 1 25 18 Z" transform="rotate(0 25 25) scale(0.5 1.2) translate(0 -10)"/><path d="M25 18 A 12 12 0 0 1 25 42 A 12 12 0 0 1 25 18 Z" transform="rotate(45 25 25) scale(0.5 1.2) translate(0 -10)"/><path d="M25 18 A 12 12 0 0 1 25 42 A 12 12 0 0 1 25 18 Z" transform="rotate(90 25 25) scale(0.5 1.2) translate(0 -10)"/><path d="M25 18 A 12 12 0 0 1 25 42 A 12 12 0 0 1 25 18 Z" transform="rotate(135 25 25) scale(0.5 1.2) translate(0 -10)"/><path d="M25 18 A 12 12 0 0 1 25 42 A 12 12 0 0 1 25 18 Z" transform="rotate(180 25 25) scale(0.5 1.2) translate(0 -10)"/><path d="M25 18 A 12 12 0 0 1 25 42 A 12 12 0 0 1 25 18 Z" transform="rotate(225 25 25) scale(0.5 1.2) translate(0 -10)"/><path d="M25 18 A 12 12 0 0 1 25 42 A 12 12 0 0 1 25 18 Z" transform="rotate(270 25 25) scale(0.5 1.2) translate(0 -10)"/><path d="M25 18 A 12 12 0 0 1 25 42 A 12 12 0 0 1 25 18 Z" transform="rotate(315 25 25) scale(0.5 1.2) translate(0 -10)"/></g><circle cx="25" cy="25" r="7" fill="#FFD700"/></svg>`;
         const petalColors = ['#FFFFFF', '#F5F5F5', '#FAFAFA'];
 
-        // --- Connect the Stars Logic ---
-        const canvas = document.getElementById('connect-stars-canvas');
-        const ctx = canvas.getContext('2d');
+        // --- Entry Logic ---
+        const loadingIndicator = document.getElementById('loading-indicator');
+        const holdContainer = document.getElementById('hold-to-enter-container');
+        const entryOrb = document.getElementById('entry-orb');
+        const disclaimer = document.getElementById('disclaimer');
         let hasEntered = false;
-        let stars = [];
-        let isDrawing = false;
-        let currentLine = null;
+        let holdTimeout;
 
-        function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            stars = [
-                { x: canvas.width * 0.25, y: canvas.height / 2, radius: 10, glow: 15 },
-                { x: canvas.width * 0.75, y: canvas.height / 2, radius: 10, glow: 15 }
-            ];
-        }
+        // Show the interactive entry UI after a brief moment
+        setTimeout(() => {
+            loadingIndicator.style.display = 'none';
+            holdContainer.classList.remove('hidden');
+            holdContainer.classList.add('flex');
+            disclaimer.classList.remove('hidden');
+        }, 1500);
 
-        function draw() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            const pulse = Math.sin(Date.now() * 0.005) * 5 + 15;
-
-            stars.forEach((star, index) => {
-                const gradient = ctx.createRadialGradient(star.x, star.y, 0, star.x, star.y, star.radius + pulse);
-                gradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
-                gradient.addColorStop(0.5, 'rgba(255, 235, 59, 0.8)');
-                gradient.addColorStop(1, 'rgba(255, 193, 7, 0)');
-                ctx.fillStyle = gradient;
-                ctx.beginPath();
-                ctx.arc(star.x, star.y, star.radius + pulse, 0, Math.PI * 2);
-                ctx.fill();
-            });
-
-            if (isDrawing && currentLine) {
-                ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
-                ctx.lineWidth = 3;
-                ctx.shadowBlur = 10;
-                ctx.shadowColor = 'white';
-                ctx.beginPath();
-                ctx.moveTo(currentLine.startX, currentLine.startY);
-                ctx.lineTo(currentLine.endX, currentLine.endY);
-                ctx.stroke();
-                ctx.shadowBlur = 0;
-            }
-
-            requestAnimationFrame(draw);
-        }
-
-        function getDistance(p1, p2) {
-            return Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
-        }
-
-        function handleStart(e) {
+        function startHold() {
             if (hasEntered) return;
-            e.preventDefault();
-            const pos = e.touches ? e.touches[0] : e;
-            const x = pos.clientX;
-            const y = pos.clientY;
-
-            stars.forEach((star, index) => {
-                if (getDistance({x, y}, star) < star.radius + 20) {
-                    isDrawing = true;
-                    currentLine = { startX: star.x, startY: star.y, endX: x, endY: y, fromStar: index };
-                }
-            });
+            entryOrb.classList.add('holding');
+            holdTimeout = setTimeout(enterHomepage, 1500);
         }
 
-        function handleMove(e) {
-            if (!isDrawing || hasEntered) return;
-            e.preventDefault();
-            const pos = e.touches ? e.touches[0] : e;
-            currentLine.endX = pos.clientX;
-            currentLine.endY = pos.clientY;
+        function cancelHold() {
+            entryOrb.classList.remove('holding');
+            clearTimeout(holdTimeout);
         }
 
-        function handleEnd(e) {
-            if (!isDrawing || hasEntered) return;
-            const targetStarIndex = currentLine.fromStar === 0 ? 1 : 0;
-            const targetStar = stars[targetStarIndex];
-            
-            if (getDistance({x: currentLine.endX, y: currentLine.endY}, targetStar) < targetStar.radius + 20) {
-                enterHomepage();
-            } else {
-                isDrawing = false;
-                currentLine = null;
-            }
-        }
-
-        resizeCanvas();
-        draw();
-        window.addEventListener('resize', resizeCanvas);
-        canvas.addEventListener('mousedown', handleStart);
-        canvas.addEventListener('mousemove', handleMove);
-        canvas.addEventListener('mouseup', handleEnd);
-        canvas.addEventListener('touchstart', handleStart, { passive: false });
-        canvas.addEventListener('touchmove', handleMove, { passive: false });
-        canvas.addEventListener('touchend', handleEnd);
+        entryOrb.addEventListener('mousedown', startHold);
+        entryOrb.addEventListener('mouseup', cancelHold);
+        entryOrb.addEventListener('mouseleave', cancelHold);
+        entryOrb.addEventListener('touchstart', startHold, { passive: false });
+        entryOrb.addEventListener('touchend', cancelHold);
 
         function enterHomepage() {
             if (hasEntered) return;
             hasEntered = true;
             triggerHapticFeedback();
             
-            const origin = {
-                left: (stars[0].x + stars[1].x) / 2,
-                top: (stars[0].y + stars[1].y) / 2,
-                width: 0,
-                height: 0
-            };
-            animatePortal(origin, 'opening');
+            const orbRect = entryOrb.getBoundingClientRect();
+            animatePortal(orbRect, 'opening');
 
-            document.getElementById('entry-text').style.opacity = '0';
-            document.getElementById('disclaimer').style.opacity = '0';
+            const elementsToFade = [holdContainer, disclaimer];
+            elementsToFade.forEach(el => {
+                el.style.transition = 'opacity 0.5s ease-out';
+                el.style.opacity = '0';
+            });
 
             setTimeout(() => {
                 loadingPage.style.transition = 'opacity 1s ease-out';
