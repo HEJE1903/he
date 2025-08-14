@@ -74,7 +74,7 @@
 
         .story-content {
             background-color: rgba(0, 0, 0, 0);
-            transition: background-color 0.3s ease-out; /* MODIFIED: Faster transition */
+            transition: background-color 0.3s ease-out;
             scroll-snap-type: y mandatory;
             overflow-y: auto;
             height: 100%;
@@ -86,7 +86,7 @@
         
         .snap-section {
             scroll-snap-align: start;
-            scroll-snap-stop: always; /* MODIFIED: Added for better mobile scrolling */
+            scroll-snap-stop: always;
             height: 100vh;
             display: flex;
             flex-direction: column;
@@ -661,7 +661,7 @@
             const textWrapper = target.querySelector('.story-text-wrapper');
             const scrollIndicator = target.parentElement.parentElement.querySelector('.scroll-indicator');
             if (target.scrollTop > 20) {
-                target.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+                target.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
                 textWrapper.style.opacity = '1';
                 if (scrollIndicator) scrollIndicator.classList.add('hidden');
             } else {
