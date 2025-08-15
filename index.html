@@ -74,7 +74,7 @@
 
         .story-content {
             background-color: rgba(0, 0, 0, 0);
-            transition: background-color: 0.3s ease-out;
+            transition: background-color 0.3s ease-out;
             scroll-snap-type: y mandatory;
             overflow-y: auto;
             height: 100%;
@@ -289,15 +289,15 @@
                 <div id="menu-container" class="flex flex-col items-center">
                      <div id="topic-buttons-wrapper" class="flex flex-wrap justify-center gap-4 px-4">
                         <button id="topic-button-1" data-page="story-page-1" class="topic-button w-48 flex items-center justify-center gap-2 bg-white/40 border border-white/50 backdrop-blur-lg text-amber-900 font-bold py-3 px-6 rounded-lg shadow-lg">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
                             <span>The Night We Met</span>
                         </button>
                         <button id="topic-button-2" data-page="story-page-2" class="topic-button w-48 flex items-center justify-center gap-2 bg-white/40 border border-white/50 backdrop-blur-lg text-amber-900 font-bold py-3 px-6 rounded-lg shadow-lg">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7"/><path d="m19 19-7-7 7-7"/></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0"><path d="m12 19-7-7 7-7"/><path d="m19 19-7-7 7-7"/></svg>
                             <span>A Thousand Miles</span>
                         </button>
                         <button id="topic-button-3" data-page="story-page-3" class="topic-button w-48 flex items-center justify-center gap-2 bg-white/40 border border-white/50 backdrop-blur-lg text-amber-900 font-bold py-3 px-6 rounded-lg shadow-lg">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.42 9.58 13.58 12 10.42 14.42 M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20Z"/></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0"><path d="M10.42 9.58 13.58 12 10.42 14.42 M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20Z"/></svg>
                             <span>Our Little Infinity</span>
                         </button>
                     </div>
@@ -658,7 +658,6 @@
 
         function handleStoryScroll(event) {
             const target = event.target;
-            const textWrapper = target.querySelector('.story-text-wrapper');
             const scrollIndicator = target.parentElement.parentElement.querySelector('.scroll-indicator');
             if (target.scrollTop > 20) {
                 if (scrollIndicator) scrollIndicator.classList.add('hidden');
