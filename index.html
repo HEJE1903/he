@@ -659,14 +659,15 @@
         }
 
         function handleStoryScroll(event) {
-            const target = event.target;
-            const scrollIndicator = target.parentElement.parentElement.querySelector('.scroll-indicator');
-            if (target.scrollTop > 20) {
-                if (scrollIndicator) scrollIndicator.classList.add('hidden');
-            } else {
-                if (scrollIndicator) scrollIndicator.classList.remove('hidden');
-            }
-        }
+    const target = event.target;
+    // MODIFIED: Removed one .parentElement
+    const scrollIndicator = target.parentElement.querySelector('.scroll-indicator'); 
+    if (target.scrollTop > 20) {
+        if (scrollIndicator) scrollIndicator.classList.add('hidden');
+    } else {
+        if (scrollIndicator) scrollIndicator.classList.remove('hidden');
+    }
+}
 
         function showStoryPage(buttonElement, pageId) {
             triggerHapticFeedback();
